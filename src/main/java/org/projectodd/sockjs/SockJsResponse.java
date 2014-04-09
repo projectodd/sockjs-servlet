@@ -12,10 +12,6 @@ import java.util.List;
 
 public abstract class SockJsResponse {
 
-    public SockJsResponse() {
-        pendingWrites = new ArrayList<>();
-    }
-
     public abstract String getHeader(String name);
 
     public abstract void setHeader(String name, String value);
@@ -48,11 +44,6 @@ public abstract class SockJsResponse {
         System.err.println("!!! WRITING " + content);
 
         byte[] bytes = content.getBytes(UTF8);
-//        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(bytes.length);
-//        byteStream.write(bytes);
-//        pendingWrites.add(byteStream);
-//
-//        System.err.println("!!! ADDED NEW PENDING WRITTE, SIZE IS NOW " + pendingWrites.size());
         try {
             write(bytes);
             flush();
@@ -78,7 +69,6 @@ public abstract class SockJsResponse {
         return finished;
     }
 
-    final List<ByteArrayOutputStream> pendingWrites;
     private Integer cacheFor;
     private int statusCode = 200;
     private boolean finished = false;
