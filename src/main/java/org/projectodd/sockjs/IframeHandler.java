@@ -1,5 +1,9 @@
-package org.projectodd.sockjs;
+/**
+ * Copyright (C) 2014 Red Hat, Inc, and individual contributors.
+ * Copyright (C) 2011-2012 VMware, Inc.
+ */
 
+package org.projectodd.sockjs;
 
 /**
  * Roughly correlates to sockjs-node's iframe.coffee

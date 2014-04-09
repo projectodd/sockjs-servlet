@@ -1,9 +1,47 @@
-This is a fairly direct port of sockjs-node
-(https://github.com/sockjs/sockjs-node/) to Java and thus the MIT
-license and copyright are copied as well.
+This project is based largely on code ported from sockjs-node
+(https://github.com/sockjs/sockjs-node/) to Java. The code ported from
+CoffeeScript to Java contains both VMware and Red Hat copyright
+headers.
+
+Other portions of the code were written entirely from scratch and have
+no equivalent in the upstream sockjs-node code. The code written from
+scratch contains only a Red Hat copyright header.
+
+The entire project is licensed under the MIT license, just like the
+upstream sockjs-node at the time of porting.
+
+
+Copyright (C) 2014 Red Hat, Inc, and individual contributors.
+Copyright (C) 2011 VMware, Inc.
+
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
+
+
+The original copyright and license from sockjs-node at the time of
+porting is as follows:
 
 
 Copyright (C) 2011 VMware, Inc.
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

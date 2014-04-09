@@ -1,3 +1,7 @@
+/**
+ * Copyright (C) 2014 Red Hat, Inc, and individual contributors.
+ */
+
 package org.projectodd.sockjs.servlet;
 
 import org.projectodd.sockjs.Server;
@@ -10,10 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Roughly correlates to sockjs-node's sockjs.coffee Server and
- * Listener classes with some bits from webjs.coffee
- */
 public class SockJsServlet extends HttpServlet {
 
     public SockJsServlet() {

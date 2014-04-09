@@ -1,3 +1,7 @@
+/**
+ * Copyright (C) 2014 Red Hat, Inc, and individual contributors.
+ */
+
 package org.projectodd.sockjs.servlet;
 
 import org.projectodd.sockjs.SockJsException;
