@@ -8,6 +8,7 @@ package org.projectodd.sockjs;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class Server {
@@ -37,7 +38,15 @@ public class Server {
         dispatcher.push("POST", t("/xhr_streaming"), appHandler.hSid, webHandler.hNoCache, xhrHandler.xhrCors, xhrHandler.xhrStreaming);
         dispatcher.push("OPTIONS", t("/xhr_streaming"), optsFilters());
 
-        scheduledExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+        scheduledExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = Executors.defaultThreadFactory().newThread(r);
+                // Mark as a daemon thread so we never prevent shutdown
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
     }
 
     public void destroy() {
