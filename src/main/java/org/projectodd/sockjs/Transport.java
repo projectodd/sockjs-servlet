@@ -16,11 +16,15 @@ public class Transport {
         return "c" + "[" + status + ",\"" + reason + "\"]";
     }
 
-    public static Session register(SockJsRequest req, Server server, ResponseReceiver receiver) {
+    public static Session register(SockJsRequest req, Server server, GenericReceiver receiver) {
         return register(req, server, req.session(), receiver);
     }
 
-    public static Session register(SockJsRequest req, Server server, String sessionId, ResponseReceiver receiver) {
+    public static Session registerNoSession(SockJsRequest req, Server server, GenericReceiver receiver) {
+        return register(req, server, null, receiver);
+    }
+
+    private static Session register(SockJsRequest req, Server server, String sessionId, GenericReceiver receiver) {
         Session session = Session.bySessionId(sessionId);
         if (session == null) {
             session = new Session(sessionId, server);

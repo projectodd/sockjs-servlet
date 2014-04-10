@@ -12,6 +12,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.DeploymentException;
+import javax.websocket.server.ServerContainer;
+import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 
 public class SockJsServlet extends HttpServlet {
@@ -38,6 +41,29 @@ public class SockJsServlet extends HttpServlet {
             server = new Server();
         }
         server.init();
+
+        if (server.options.websocket) {
+            String websocketPath = server.options.prefix + "/{server}/{session}/websocket";
+            ServerEndpointConfig config = ServerEndpointConfig.Builder
+                    .create(SockJsEndpoint.class, websocketPath)
+                    .configurator(new ServerEndpointConfig.Configurator() {
+                        @Override
+                        public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
+                            try {
+                                return endpointClass.getConstructor(Server.class).newInstance(server);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    })
+                    .build();
+            ServerContainer serverContainer = (ServerContainer) getServletContext().getAttribute("javax.websocket.server.ServerContainer");
+            try {
+                serverContainer.addEndpoint(config);
+            } catch (DeploymentException ex) {
+                throw new ServletException("Error deploying websocket endpoint:", ex);
+            }
+        }
     }
 
     @Override

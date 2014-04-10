@@ -22,6 +22,7 @@ public class Server {
         webHandler = new WebHandler(this);
         iframeHandler = new IframeHandler(this);
         chunkingHandler = new ChunkingHandler(this);
+        websocketHandler = new WebsocketHandler(this);
         xhrHandler = new XhrHandler(this);
 
         dispatcher = new Dispatcher(appHandler.handle404, webHandler.handle405, webHandler.handleError);
@@ -31,12 +32,19 @@ public class Server {
         dispatcher.push("OPTIONS", p("/info"), optsFilters(chunkingHandler.infoOptions));
         dispatcher.push("GET", p("/info"), xhrHandler.xhrCors, webHandler.hNoCache,
                 chunkingHandler.info, webHandler.expose);
+        dispatcher.push("GET", p("/websocket"), websocketHandler.rawWebsocket);
         dispatcher.push("POST", t("/xhr"), appHandler.hSid, webHandler.hNoCache, xhrHandler.xhrCors, xhrHandler.xhrPoll);
         dispatcher.push("OPTIONS", t("/xhr"), optsFilters());
         dispatcher.push("POST", t("/xhr_send"), appHandler.hSid, webHandler.hNoCache, xhrHandler.xhrCors, webHandler.expectXhr, xhrHandler.xhrSend);
         dispatcher.push("OPTIONS", t("/xhr_send"), optsFilters());
         dispatcher.push("POST", t("/xhr_streaming"), appHandler.hSid, webHandler.hNoCache, xhrHandler.xhrCors, xhrHandler.xhrStreaming);
         dispatcher.push("OPTIONS", t("/xhr_streaming"), optsFilters());
+
+        if (options.websocket) {
+            dispatcher.push("GET", t("/websocket"), websocketHandler.sockjsWebsocket);
+        } else {
+            dispatcher.push("GET", t("/websocket"), webHandler.cacheFor, appHandler.disabledTransport);
+        }
 
         scheduledExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
             @Override
@@ -96,6 +104,7 @@ public class Server {
     private WebHandler webHandler;
     private IframeHandler iframeHandler;
     private ChunkingHandler chunkingHandler;
+    private WebsocketHandler websocketHandler;
     private XhrHandler xhrHandler;
     private ScheduledExecutorService scheduledExecutor;
     private OnConnectionHandler onConnectionHandler;

@@ -78,6 +78,7 @@ public class Session {
 
     private void decorateConnection(SockJsRequest req) {
         // TODO: actually decorate this sucker
+        connection.protocol = recv.protocol;
     }
 
     public void unregister() {
@@ -184,6 +185,9 @@ public class Session {
     }
 
     public static Session bySessionId(String sessionId) {
+        if (sessionId == null) {
+            return null;
+        }
         return sessions.get(sessionId);
     }
 

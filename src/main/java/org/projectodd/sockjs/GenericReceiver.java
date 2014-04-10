@@ -26,4 +26,5 @@ public abstract class GenericReceiver {
     public abstract boolean doSendFrame(String payload);
 
     public Session session;
+    protected String protocol = null;
 }

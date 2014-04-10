@@ -44,5 +44,4 @@ public class ResponseReceiver extends GenericReceiver {
     protected Server.Options options;
     protected int currResponseSize;
     protected int maxResponseSize = -1;
-    protected String protocol = null;
 }

@@ -4,7 +4,6 @@
 
 package org.projectodd.sockjs.servlet;
 
-import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.PathHandler;
@@ -13,7 +12,6 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletInfo;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
-import io.undertow.util.Headers;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
 import org.junit.Test;
 import org.projectodd.sockjs.Server;
@@ -103,15 +101,20 @@ public class SockJsServletTest {
                 servletClass,
                 new ImmediateInstanceFactory<>(servlet));
         servletInfo.addMapping("/*");
+        // LoadOnStartup is required for our websocket Endpoint to work
+        servletInfo.setLoadOnStartup(0);
+        // AsyncSupported is required
         servletInfo.setAsyncSupported(true);
-        final WebSocketDeploymentInfo wsInfo = new WebSocketDeploymentInfo();
         final DeploymentInfo servletBuilder = Servlets.deployment()
                 .setClassLoader(SockJsServletTest.class.getClassLoader())
                 .setContextPath(context)
                 .setDeploymentName(context)
+                // Because Undertow tries to be too smart and ignore our flushes
                 .setIgnoreFlush(false)
-                .addServletContextAttribute(WebSocketDeploymentInfo.ATTRIBUTE_NAME, wsInfo)
                 .addServlet(servletInfo);
+        // Required for any websocket support in undertow
+        final WebSocketDeploymentInfo wsInfo = new WebSocketDeploymentInfo();
+        servletBuilder.addServletContextAttribute(WebSocketDeploymentInfo.ATTRIBUTE_NAME, wsInfo);
         final DeploymentManager manager = Servlets.defaultContainer().addDeployment(servletBuilder);
         manager.deploy();
         final HttpHandler servletHandler = manager.start();

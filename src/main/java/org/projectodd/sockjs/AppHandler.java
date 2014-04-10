@@ -33,6 +33,13 @@ public class AppHandler {
         }
     };
 
+    public DispatchFunction disabledTransport = new DispatchFunction() {
+        @Override
+        public Object handle(SockJsRequest req, SockJsResponse res, Object data) throws SockJsException {
+            return handle404.handle(req, res, data);
+        }
+    };
+
     public DispatchFunction hSid = new DispatchFunction() {
         @Override
         public Object handle(SockJsRequest req, SockJsResponse res, Object data) throws SockJsException {

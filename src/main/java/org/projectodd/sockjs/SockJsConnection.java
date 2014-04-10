@@ -72,6 +72,8 @@ public class SockJsConnection {
     private OnEndHandler onEndHandler;
     private OnCloseHandler onCloseHandler;
 
+    public String protocol;
+
     public static interface OnDataHandler {
         public void handle(String message);
     }
