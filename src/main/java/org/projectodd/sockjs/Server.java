@@ -24,6 +24,7 @@ public class Server {
         chunkingHandler = new ChunkingHandler(this);
         websocketHandler = new WebsocketHandler(this);
         xhrHandler = new XhrHandler(this);
+        eventsourceHandler = new EventsourceHandler(this);
 
         dispatcher = new Dispatcher(appHandler.handle404, webHandler.handle405, webHandler.handleError);
         dispatcher.push("GET", p(""), appHandler.welcomeScreen);
@@ -39,6 +40,7 @@ public class Server {
         dispatcher.push("OPTIONS", t("/xhr_send"), optsFilters());
         dispatcher.push("POST", t("/xhr_streaming"), appHandler.hSid, webHandler.hNoCache, xhrHandler.xhrCors, xhrHandler.xhrStreaming);
         dispatcher.push("OPTIONS", t("/xhr_streaming"), optsFilters());
+        dispatcher.push("GET", t("/eventsource"), appHandler.hSid, webHandler.hNoCache, eventsourceHandler.eventsource);
 
         if (options.websocket) {
             dispatcher.push("GET", t("/websocket"), websocketHandler.sockjsWebsocket);
@@ -106,6 +108,7 @@ public class Server {
     private ChunkingHandler chunkingHandler;
     private WebsocketHandler websocketHandler;
     private XhrHandler xhrHandler;
+    private EventsourceHandler eventsourceHandler;
     private ScheduledExecutorService scheduledExecutor;
     private OnConnectionHandler onConnectionHandler;
     public Options options = new Options();

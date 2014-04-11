@@ -7,6 +7,8 @@ package org.projectodd.sockjs;
 
 import com.google.gson.Gson;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class Utils {
 
@@ -50,9 +53,23 @@ public class Utils {
         return UUID.randomUUID().toString();
     }
 
+    public static String escapeSelected(String str, String chars) {
+        chars = "%" + chars;
+        for (int i = 0; i < chars.length(); i++) {
+            String charAsStr = chars.substring(i, i + 1);
+            try {
+                str = str.replace(charAsStr, URLEncoder.encode(charAsStr, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("UTF-8 encoding not found:", e);
+            }
+        }
+        return str;
+    }
+
     public static String quote(String string) {
-        String quoted = "\"" + string + "\"";
-        // TODO: crap with JSON.stringify, escapable
+        Gson gson = new Gson();
+        String quoted = gson.toJson(string);
+        // TODO: crap with escapable
         return quoted;
     }
 
@@ -64,4 +81,6 @@ public class Utils {
     private static final String RFC1123_PATTERN = "EEE, dd MMM yyyy HH:mm:ss z";
     private static final Locale LOCALE_US = Locale.US;
     private static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
+
+    private static final Pattern ESCAPABLE = Pattern.compile("[\\x00-\\x1f\\ud800-\\udfff\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufff0-\\uffff]");
 }
