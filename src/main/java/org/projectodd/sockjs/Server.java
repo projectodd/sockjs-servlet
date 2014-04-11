@@ -26,6 +26,7 @@ public class Server {
         jsonpHandler = new JsonpHandler(this);
         xhrHandler = new XhrHandler(this);
         eventsourceHandler = new EventsourceHandler(this);
+        htmlfileHandler = new HtmlfileHandler(this);
 
         dispatcher = new Dispatcher(appHandler.handle404, webHandler.handle405, webHandler.handleError);
         dispatcher.push("GET", p(""), appHandler.welcomeScreen);
@@ -44,6 +45,7 @@ public class Server {
         dispatcher.push("POST", t("/xhr_streaming"), appHandler.hSid, webHandler.hNoCache, xhrHandler.xhrCors, xhrHandler.xhrStreaming);
         dispatcher.push("OPTIONS", t("/xhr_streaming"), optsFilters());
         dispatcher.push("GET", t("/eventsource"), appHandler.hSid, webHandler.hNoCache, eventsourceHandler.eventsource);
+        dispatcher.push("GET", t("/htmlfile"), appHandler.hSid, webHandler.hNoCache, htmlfileHandler.htmlfile);
 
         if (options.websocket) {
             dispatcher.push("GET", t("/websocket"), websocketHandler.sockjsWebsocket);
@@ -113,6 +115,7 @@ public class Server {
     private JsonpHandler jsonpHandler;
     private XhrHandler xhrHandler;
     private EventsourceHandler eventsourceHandler;
+    private HtmlfileHandler htmlfileHandler;
     private ScheduledExecutorService scheduledExecutor;
     private OnConnectionHandler onConnectionHandler;
     public Options options = new Options();

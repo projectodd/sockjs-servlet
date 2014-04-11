@@ -6,6 +6,7 @@
 package org.projectodd.sockjs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -85,12 +86,9 @@ public class XhrHandler {
             res.setHeader("Content-Type", "application/javascript; charset=UTF-8");
             res.writeHead(200);
 
-            int ieByteCount = 2049;
-            List<String> ieWorkaround = new ArrayList<>(ieByteCount);
-            for (int i = 0; i < ieByteCount; i++) {
-                ieWorkaround.add("");
-            }
-            res.write(Utils.join(ieWorkaround, "h") + "\n");
+            char[] ieWorkaround = new char[2048];
+            Arrays.fill(ieWorkaround, 'h');
+            res.write(new String(ieWorkaround) + "\n");
 
             Transport.register(req, server, new XhrStreamingReceiver(req, res, server.options));
             return true;
