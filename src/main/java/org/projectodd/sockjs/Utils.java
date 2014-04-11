@@ -67,14 +67,16 @@ public class Utils {
     }
 
     public static String quote(String string) {
-        Gson gson = new Gson();
-        String quoted = gson.toJson(string);
+        String quoted = jsonStringify(string);
         // TODO: crap with escapable
         return quoted;
     }
 
+    public static String jsonStringify(String string) {
+        return gson.toJson(string);
+    }
+
     public static <T> T parseJson(String json, Class<T> clazz) {
-        Gson gson = new Gson();
         return gson.fromJson(json, clazz);
     }
 
@@ -83,4 +85,6 @@ public class Utils {
     private static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
 
     private static final Pattern ESCAPABLE = Pattern.compile("[\\x00-\\x1f\\ud800-\\udfff\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufff0-\\uffff]");
+
+    private static final Gson gson = new Gson();
 }

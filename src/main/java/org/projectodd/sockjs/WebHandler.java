@@ -98,6 +98,47 @@ public class WebHandler {
         }
     };
 
+    public DispatchFunction expectForm = new DispatchFunction() {
+        @Override
+        public Object handle(final SockJsRequest req, SockJsResponse res, Object _data) throws SockJsException {
+            System.err.println("!!! EXPECTING FORM");
+            final Buffer data = new Buffer(0);
+            req.onData(new SockJsRequest.OnDataHandler() {
+                @Override
+                public void handle(byte[] d) throws SockJsException {
+                    System.err.println("!!! ON DATA " + new String(d));
+                    data.concat(new Buffer(d));
+                }
+            });
+            req.onEnd(new SockJsRequest.OnEndHandler() {
+                @Override
+                public void handle() throws SockJsException {
+                    System.err.println("!!! ON END");
+                    String contentType = req.getContentType();
+                    if (contentType == null) {
+                        contentType = "";
+                    }
+                    Object q;
+                    switch(contentType.split(";")[0]) {
+                        case "application/x-www-form-urlencoded":
+                            // We'll use req.getQueryParameter later to retrieve form data
+                            q = new Object();
+                            break;
+                        case "text/plain":
+                            q = data.toString("UTF-8");
+                            break;
+                        default:
+                            q = null;
+                            break;
+                    }
+                    System.err.println("!!! Q IS " + q);
+                    req.nextFilter.handle(q);
+                }
+            });
+            throw new DispatchException(0);
+        }
+    };
+
     public DispatchFunction expectXhr = new DispatchFunction() {
         @Override
         public Object handle(final SockJsRequest req, final SockJsResponse res, Object _data) throws SockJsException {
@@ -105,14 +146,14 @@ public class WebHandler {
             final Buffer data = new Buffer(0);
             req.onData(new SockJsRequest.OnDataHandler() {
                 @Override
-                public void handle(byte[] d) {
+                public void handle(byte[] d) throws SockJsException {
                     System.err.println("!!! ON DATA " + new String(d));
                     data.concat(new Buffer(d));
                 }
             });
             req.onEnd(new SockJsRequest.OnEndHandler() {
                 @Override
-                public void handle() {
+                public void handle() throws SockJsException {
                     System.err.println("!!! ON END");
                     String contentType = req.getContentType();
                     if (contentType == null) {
@@ -132,12 +173,8 @@ public class WebHandler {
                             q = null;
                             break;
                     }
-                    try {
-                        System.err.println("!!! Q IS " + q);
-                        req.nextFilter.handle(q);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    System.err.println("!!! Q IS " + q);
+                    req.nextFilter.handle(q);
                 }
             });
             throw new DispatchException(0);

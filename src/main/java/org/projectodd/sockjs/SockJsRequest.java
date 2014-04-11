@@ -25,6 +25,8 @@ public abstract class SockJsRequest {
 
     public abstract String getCookie(String name);
 
+    public abstract String getQueryParameter(String name);
+
     public void addMatch(String key, String value) {
         matches.put(key, value);
     }
@@ -53,10 +55,10 @@ public abstract class SockJsRequest {
 
 
     public static interface OnDataHandler {
-        public void handle(byte[] bytes);
+        public void handle(byte[] bytes) throws SockJsException;
     }
 
     public static interface OnEndHandler {
-        public void handle();
+        public void handle() throws SockJsException;
     }
 }

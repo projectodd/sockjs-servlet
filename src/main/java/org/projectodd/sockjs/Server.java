@@ -23,6 +23,7 @@ public class Server {
         iframeHandler = new IframeHandler(this);
         chunkingHandler = new ChunkingHandler(this);
         websocketHandler = new WebsocketHandler(this);
+        jsonpHandler = new JsonpHandler(this);
         xhrHandler = new XhrHandler(this);
         eventsourceHandler = new EventsourceHandler(this);
 
@@ -34,6 +35,8 @@ public class Server {
         dispatcher.push("GET", p("/info"), xhrHandler.xhrCors, webHandler.hNoCache,
                 chunkingHandler.info, webHandler.expose);
         dispatcher.push("GET", p("/websocket"), websocketHandler.rawWebsocket);
+        dispatcher.push("GET", t("/jsonp"), appHandler.hSid, webHandler.hNoCache, jsonpHandler.jsonp);
+        dispatcher.push("POST", t("/jsonp_send"), appHandler.hSid, webHandler.hNoCache, webHandler.expectForm, jsonpHandler.jsonpSend);
         dispatcher.push("POST", t("/xhr"), appHandler.hSid, webHandler.hNoCache, xhrHandler.xhrCors, xhrHandler.xhrPoll);
         dispatcher.push("OPTIONS", t("/xhr"), optsFilters());
         dispatcher.push("POST", t("/xhr_send"), appHandler.hSid, webHandler.hNoCache, xhrHandler.xhrCors, webHandler.expectXhr, xhrHandler.xhrSend);
@@ -107,6 +110,7 @@ public class Server {
     private IframeHandler iframeHandler;
     private ChunkingHandler chunkingHandler;
     private WebsocketHandler websocketHandler;
+    private JsonpHandler jsonpHandler;
     private XhrHandler xhrHandler;
     private EventsourceHandler eventsourceHandler;
     private ScheduledExecutorService scheduledExecutor;

@@ -3,6 +3,7 @@ package org.projectodd.sockjs.servlet;
 import org.projectodd.sockjs.SockJsRequest;
 
 import javax.websocket.Session;
+import java.util.List;
 
 public class SockJsWebsocketRequest extends SockJsRequest {
 
@@ -33,6 +34,15 @@ public class SockJsWebsocketRequest extends SockJsRequest {
 
     @Override
     public String getCookie(String name) {
+        return null;
+    }
+
+    @Override
+    public String getQueryParameter(String name) {
+        List<String> paramValues = session.getRequestParameterMap().get(name);
+        if (paramValues != null && paramValues.size() > 0) {
+            return paramValues.get(0);
+        }
         return null;
     }
 

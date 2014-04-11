@@ -71,11 +71,16 @@ public class SockJsServlet extends HttpServlet {
         AsyncContext asyncContext = req.startAsync();
         SockJsServletRequest sockJsReq = new SockJsServletRequest(req);
         SockJsServletResponse sockJsRes = new SockJsServletResponse(res, asyncContext);
-        req.getInputStream().setReadListener(sockJsReq);
         try {
             server.dispatch(sockJsReq, sockJsRes);
         } catch (SockJsException ex) {
             throw new ServletException("Error during SockJS request:", ex);
+        }
+        if ("application/x-www-form-urlencoded".equals(req.getHeader("Content-Type"))) {
+            // Let the servlet parse data and just pretend like we did
+            sockJsReq.onAllDataRead();
+        } else {
+            req.getInputStream().setReadListener(sockJsReq);
         }
     }
 

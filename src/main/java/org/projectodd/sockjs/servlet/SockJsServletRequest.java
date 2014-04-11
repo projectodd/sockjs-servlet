@@ -4,6 +4,7 @@
 
 package org.projectodd.sockjs.servlet;
 
+import org.projectodd.sockjs.SockJsException;
 import org.projectodd.sockjs.SockJsRequest;
 
 import javax.servlet.ReadListener;
@@ -50,6 +51,11 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
     }
 
     @Override
+    public String getQueryParameter(String name) {
+        return request.getParameter(name);
+    }
+
+    @Override
     public void onDataAvailable() throws IOException {
         ServletInputStream inputStream = request.getInputStream();
         System.err.println("!!! onDataAvailable");
@@ -58,7 +64,11 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
             int length = inputStream.read(buffer);
             if (length > 0) {
                 if (onDataHandler != null) {
-                    onDataHandler.handle(Arrays.copyOf(buffer, length));
+                    try {
+                        onDataHandler.handle(Arrays.copyOf(buffer, length));
+                    } catch (SockJsException e) {
+                        throw new IOException(e);
+                    }
                 }
             }
         } while (inputStream.isReady());
@@ -68,7 +78,11 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
     public void onAllDataRead() throws IOException {
         System.err.println("!!! onAllDataRead");
         if (onEndHandler != null) {
-            onEndHandler.handle();
+            try {
+                onEndHandler.handle();
+            } catch (SockJsException e) {
+                throw new IOException(e);
+            }
         }
     }
 
