@@ -71,6 +71,29 @@ public class SockJsServletTest {
             }
         });
 
+        Server echoCookie = new Server();
+        echoCookie.options.responseLimit = 4096;
+        echoCookie.options.jsessionid = true;
+        echoCookie.onConnection(new Server.OnConnectionHandler() {
+            @Override
+            public void handle(final SockJsConnection connection) {
+                System.out.println("    [+] echo open    " + connection);
+                connection.onClose(new SockJsConnection.OnCloseHandler() {
+                    @Override
+                    public void handle() {
+                        System.out.println("    [-] echo close    " + connection);
+                    }
+                });
+                connection.onData(new SockJsConnection.OnDataHandler() {
+                    @Override
+                    public void handle(String message) {
+                        System.out.println("    [ ] echo message " + connection + " " + message);
+                        connection.write(message);
+                    }
+                });
+            }
+        });
+
         Server closeServer = new Server();
         closeServer.onConnection(new Server.OnConnectionHandler() {
             @Override
@@ -89,6 +112,7 @@ public class SockJsServletTest {
         PathHandler pathHandler = new PathHandler();
         installHandler(pathHandler, echoServer, "/echo");
         installHandler(pathHandler, echoNoWsServer, "/disabled_websocket_echo");
+        installHandler(pathHandler, echoCookie, "/cookie_needed_echo");
         installHandler(pathHandler, closeServer, "/close");
 
         runServer(pathHandler, "localhost", 8081);
