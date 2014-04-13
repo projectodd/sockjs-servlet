@@ -2,5 +2,6 @@ language: java
 before_install:
   - git clone --depth 1 https://github.com/sockjs/sockjs-client.git
   - cd sockjs-client
+  - npm install uglify-js@1.2.5
   - npm install coffee-script@1.2.x
   - make test
