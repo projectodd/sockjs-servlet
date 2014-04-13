@@ -1,4 +1,4 @@
 language: java
 before_script:
   - "pip install virtualenv"
-script: "mvn verify"
+script: "mvn verify -Pintegration-tests"

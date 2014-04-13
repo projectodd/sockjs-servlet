@@ -46,9 +46,6 @@
     <version.junit>4.11</version.junit>
     <version.undertow>1.0.4.Final</version.undertow>
   </properties>
-
-  <profiles>
-  </profiles>
     
   <dependencyManagement>
     <dependencies>
@@ -196,100 +193,106 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <executions>
-          <execution>
-            <id>start-servlet</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target unless="maven.test.skip">
-                <property name="test_classpath" refid="maven.test.classpath"/>
-                <exec executable="java" dir="${basedir}" spawn="true">
-                  <arg value="-classpath"/>
-                  <arg value="${test_classpath}"/>
-                  <arg value="org.projectodd.sockjs.servlet.SockJsServletTest"/>
-                </exec>
-                <exec executable="make" dir="${basedir}/sockjs-protocol"
-                      failonerror="true">
-                  <arg value="test_deps"/>
-                </exec>
-              </target>
-            </configuration>
-          </execution>
-          <execution>
-            <id>run-protocol-tests</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target unless="maven.test.skip">
-                <exec executable="${basedir}/sockjs-protocol/venv/bin/python"
-                      dir="${basedir}/sockjs-protocol"
-                      resultProperty="build_error_code"
-                      output="${basedir}/target/sockjs-protocol-output.txt">
-                  <arg value="sockjs-protocol-0.3.3.py"/>
-                  <arg value="BaseUrlGreeting"/>
-                  <arg value="IframePage"/>
-                  <arg value="InfoTest"/>
-                  <arg value="SessionURLs"/>
-                  <arg value="Protocol"/>
-                  <arg value="WebsocketHttpErrors"/>
-                  <!-- Skipped because Undertow doesn't support Hixie
-                  <arg value="WebsocketHixie76"/>
-                  -->
-                  <arg value="WebsocketHybi10"/>
-                  <arg value="XhrPolling"/>
-                  <arg value="XhrStreaming"/>
-                  <arg value="EventSource"/>
-                  <arg value="HtmlFile"/>
-                  <arg value="JsonPolling"/>
-                  <arg value="JsessionidCookie"/>
-                  <!-- not implemented yet
-                  <arg value="RawWebsocket"/>
-                  -->
-                  <arg value="JSONEncoding"/>
-                  <arg value="HandlingClose"/>
-                  <arg value="Http10"/>
-                  <arg value="Http11"/>
-                </exec>
-              </target>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-servlet</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target unless="maven.test.skip">
-                <exec executable="pkill">
-                  <arg value="-9"/>
-                  <arg value="-f"/>
-                  <arg value="SockJsServletTest"/>
-                </exec>
-                <exec executable="/bin/bash" dir="${basedir}" failonerror="true">
-                  <arg value="${basedir}/support/check_protocol_test_results.sh"/>
-                </exec>
-                <!-- <fail message="SockJS Protocol test failures"> -->
-                <!--   <condition> -->
-                <!--     <not> -->
-                <!--       <equals arg1="${build_error_code}" arg2="0"/> -->
-                <!--     </not> -->
-                <!--   </condition> -->
-                <!-- </fail> -->
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <id>start-servlet</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target unless="maven.test.skip">
+                    <property name="test_classpath" refid="maven.test.classpath"/>
+                    <exec executable="java" dir="${basedir}" spawn="true">
+                      <arg value="-classpath"/>
+                      <arg value="${test_classpath}"/>
+                      <arg value="org.projectodd.sockjs.servlet.SockJsServletTest"/>
+                    </exec>
+                    <exec executable="make" dir="${basedir}/sockjs-protocol"
+                          failonerror="true">
+                      <arg value="test_deps"/>
+                    </exec>
+                  </target>
+                </configuration>
+              </execution>
+              <execution>
+                <id>run-protocol-tests</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target unless="maven.test.skip">
+                    <exec executable="${basedir}/sockjs-protocol/venv/bin/python"
+                          dir="${basedir}/sockjs-protocol"
+                          resultProperty="build_error_code"
+                          output="${basedir}/target/sockjs-protocol-output.txt">
+                      <arg value="sockjs-protocol-0.3.3.py"/>
+                      <arg value="BaseUrlGreeting"/>
+                      <arg value="IframePage"/>
+                      <arg value="InfoTest"/>
+                      <arg value="SessionURLs"/>
+                      <arg value="Protocol"/>
+                      <arg value="WebsocketHttpErrors"/>
+                      <!-- Skipped because Undertow doesn't support Hixie
+                           <arg value="WebsocketHixie76"/>
+                      -->
+                      <arg value="WebsocketHybi10"/>
+                      <arg value="XhrPolling"/>
+                      <arg value="XhrStreaming"/>
+                      <arg value="EventSource"/>
+                      <arg value="HtmlFile"/>
+                      <arg value="JsonPolling"/>
+                      <arg value="JsessionidCookie"/>
+                      <!-- not implemented yet
+                           <arg value="RawWebsocket"/>
+                      -->
+                      <arg value="JSONEncoding"/>
+                      <arg value="HandlingClose"/>
+                      <arg value="Http10"/>
+                      <arg value="Http11"/>
+                    </exec>
+                  </target>
+                </configuration>
+              </execution>
+              <execution>
+                <id>stop-servlet</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target unless="maven.test.skip">
+                    <exec executable="pkill">
+                      <arg value="-9"/>
+                      <arg value="-f"/>
+                      <arg value="SockJsServletTest"/>
+                    </exec>
+                    <exec executable="/bin/bash" dir="${basedir}" failonerror="true">
+                      <arg value="${basedir}/support/check_protocol_test_results.sh"/>
+                    </exec>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
