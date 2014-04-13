@@ -4,18 +4,23 @@ This is an in-progress SockJS server implementation designed to run in
 any Java Servlet 3.1 container. Things are still a work-in-progress,
 and for now it's only tested with [Undertow][].
 
+All the protocols have been implemented and I've verified that a basic
+SockJS client can connect.
+
 
 ## Testing
 
-Testing is completely manual for now and depends on the
-[sockjs-protocol][] project. I'm lazy and hacked `mvn test` to start
-up a server on http://localhost:8081 that you can then run the
-protocol tests against.
+The only tests right now depend on the [sockjs-protocol][]
+project. Make sure you have Python 2.x and virtualenv installed - see
+the [sockjs-protocol README][sockjs-protocol-tests] for how to do
+this. Once you get that done:
 
-TODO is figuring out how to run these and the [sockjs-client][] QUnit
-tests in an automated fashion.
+    git submodule init
+    git submodule update
+    mvn verify
 
 
 [undertow]: http://undertow.io/
 [sockjs-protocol]: https://github.com/sockjs/sockjs-protocol
+[sockjspprotocol-tests]: https://github.com/sockjs/sockjs-protocol#running-tests
 [sockjs-client]: https://github.com/sockjs/sockjs-client

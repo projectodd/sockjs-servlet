@@ -13,7 +13,6 @@ import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletInfo;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
-import org.junit.Test;
 import org.projectodd.sockjs.Server;
 import org.projectodd.sockjs.SockJsConnection;
 import sun.misc.Signal;
@@ -24,8 +23,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class SockJsServletTest {
 
-    @Test
-    public void runIt() throws Exception {
+    public static void main(String[] args) throws Exception {
         Server echoServer = new Server();
         echoServer.options.responseLimit = 4096;
         echoServer.onConnection(new Server.OnConnectionHandler() {
@@ -118,7 +116,7 @@ public class SockJsServletTest {
         runServer(pathHandler, "localhost", 8081);
     }
 
-    private void installHandler(PathHandler pathHandler, Server server, String context) throws Exception {
+    private static void installHandler(PathHandler pathHandler, Server server, String context) throws Exception {
         Servlet servlet = new SockJsServlet(server);
         Class<? extends Servlet> servletClass = servlet.getClass();
         final ServletInfo servletInfo = Servlets.servlet(servletClass.getSimpleName(),
@@ -146,7 +144,7 @@ public class SockJsServletTest {
         pathHandler.addPrefixPath(context, servletHandler);
     }
 
-    private void runServer(HttpHandler handler, String host, int port) throws Exception {
+    private static void runServer(HttpHandler handler, String host, int port) throws Exception {
         Undertow undertow = Undertow.builder()
                 .addHttpListener(port, host)
                 .setHandler(handler)
