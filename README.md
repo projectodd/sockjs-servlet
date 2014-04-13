@@ -27,5 +27,5 @@ this. Once you get that done:
 
 [undertow]: http://undertow.io/
 [sockjs-protocol]: https://github.com/sockjs/sockjs-protocol
-[sockjspprotocol-tests]: https://github.com/sockjs/sockjs-protocol#running-tests
+[sockjs-protocol-tests]: https://github.com/sockjs/sockjs-protocol#running-tests
 [sockjs-client]: https://github.com/sockjs/sockjs-client
