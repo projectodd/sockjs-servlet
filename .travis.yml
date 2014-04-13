@@ -4,4 +4,5 @@ before_install:
   - cd sockjs-client
   - npm install uglify-js@1.2.5
   - npm install coffee-script@1.2.x
+  - npm install optimist@0.3.5
   - make test
