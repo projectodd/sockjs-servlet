@@ -1,0 +1,5 @@
+language: java
+before_install:
+  - git clone --depth 1 https://github.com/sockjs/sockjs-client.git
+  - cd sockjs-client
+  - make test
