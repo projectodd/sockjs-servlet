@@ -44,7 +44,7 @@
     <version.gson>2.2.4</version.gson>
 
     <version.junit>4.11</version.junit>
-    <version.undertow>1.1.0.Beta1-SNAPSHOT</version.undertow>
+    <version.undertow>1.0.4.Final</version.undertow>
   </properties>
 
   <profiles>

@@ -7,8 +7,11 @@ and for now it's only tested with [Undertow][].
 All the protocols have been implemented and I've verified that a basic
 SockJS client can connect.
 
+## Building
 
-## Testing
+    mvn install
+
+## Running SockJS Protocol tests
 
 The only tests right now depend on the [sockjs-protocol][]
 project. Make sure you have Python 2.x and virtualenv installed - see
