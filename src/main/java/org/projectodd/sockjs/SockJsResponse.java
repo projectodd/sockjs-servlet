@@ -4,10 +4,7 @@
 
 package org.projectodd.sockjs;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public abstract class SockJsResponse {
