@@ -12,11 +12,14 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
@@ -68,8 +71,17 @@ public class Utils {
 
     public static String quote(String string) {
         String quoted = jsonStringify(string);
-        // TODO: crap with escapable
-        return quoted;
+
+        Matcher matcher = ESCAPABLE.matcher(quoted);
+        StringBuffer escapedQuoted = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(escapedQuoted, escapableLookup.get(matcher.group()));
+        }
+        matcher.appendTail(escapedQuoted);
+        if (escapedQuoted.length() == 0) {
+            return quoted;
+        }
+        return escapedQuoted.toString();
     }
 
     public static String jsonStringify(String string) {
@@ -85,6 +97,21 @@ public class Utils {
     private static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
 
     private static final Pattern ESCAPABLE = Pattern.compile("[\\x00-\\x1f\\ud800-\\udfff\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufff0-\\uffff]");
+    private static final Map<String, String> escapableLookup = new HashMap<>();
 
     private static final Gson gson = new Gson();
+
+    static {
+        StringBuilder chars = new StringBuilder();
+        for (int i = 0; i < 65536; i++) {
+            chars.append((char) i);
+        }
+        Matcher matcher = ESCAPABLE.matcher(chars);
+        while (matcher.find()) {
+            String a = matcher.group();
+            String escaped = "0000" + Integer.toHexString(a.charAt(0));
+            escaped = "\\\\u" + escaped.substring(escaped.length() - 4);
+            escapableLookup.put(a, escaped);
+        }
+    }
 }
