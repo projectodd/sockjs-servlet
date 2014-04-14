@@ -43,9 +43,9 @@ public class IframeHandler {
         }
     };
 
-    public IframeHandler(Server server) {
+    public IframeHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

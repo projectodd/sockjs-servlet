@@ -4,7 +4,7 @@
 
 package org.projectodd.sockjs.servlet;
 
-import org.projectodd.sockjs.Server;
+import org.projectodd.sockjs.SockJsServer;
 import org.projectodd.sockjs.SockJsException;
 
 import javax.servlet.AsyncContext;
@@ -23,34 +23,34 @@ public class SockJsServlet extends HttpServlet {
 
     }
 
-    public SockJsServlet(Server server) {
-        this.server = server;
+    public SockJsServlet(SockJsServer sockJsServer) {
+        this.sockJsServer = sockJsServer;
     }
 
-    public void setServer(Server server) {
-        this.server = server;
+    public void setServer(SockJsServer sockJsServer) {
+        this.sockJsServer = sockJsServer;
     }
 
-    public Server getServer() {
-        return server;
+    public SockJsServer getServer() {
+        return sockJsServer;
     }
 
     @Override
     public void init() throws ServletException {
-        if (server == null) {
-            server = new Server();
+        if (sockJsServer == null) {
+            sockJsServer = new SockJsServer();
         }
-        server.init();
+        sockJsServer.init();
 
-        if (server.options.websocket) {
-            String websocketPath = server.options.prefix + "/{server}/{session}/websocket";
+        if (sockJsServer.options.websocket) {
+            String websocketPath = sockJsServer.options.prefix + "/{server}/{session}/websocket";
             ServerEndpointConfig config = ServerEndpointConfig.Builder
                     .create(SockJsEndpoint.class, websocketPath)
                     .configurator(new ServerEndpointConfig.Configurator() {
                         @Override
                         public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
                             try {
-                                return endpointClass.getConstructor(Server.class).newInstance(server);
+                                return endpointClass.getConstructor(SockJsServer.class).newInstance(sockJsServer);
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
@@ -72,7 +72,7 @@ public class SockJsServlet extends HttpServlet {
         SockJsServletRequest sockJsReq = new SockJsServletRequest(req);
         SockJsServletResponse sockJsRes = new SockJsServletResponse(res, asyncContext);
         try {
-            server.dispatch(sockJsReq, sockJsRes);
+            sockJsServer.dispatch(sockJsReq, sockJsRes);
         } catch (SockJsException ex) {
             throw new ServletException("Error during SockJS request:", ex);
         }
@@ -87,8 +87,8 @@ public class SockJsServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        server.destroy();
+        sockJsServer.destroy();
     }
 
-    private Server server;
+    private SockJsServer sockJsServer;
 }

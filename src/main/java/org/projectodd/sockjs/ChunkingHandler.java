@@ -15,7 +15,7 @@ public class ChunkingHandler {
     public DispatchFunction info = new DispatchFunction() {
         @Override
         public Object handle(SockJsRequest req, SockJsResponse res, Object data) throws SockJsException {
-            Server.Options options = server.options;
+            SockJsServer.Options options = server.options;
             Random random = new Random();
             long entropy = random.nextInt(Integer.MAX_VALUE) + (long) random.nextInt(Integer.MAX_VALUE);
             StringBuilder json = new StringBuilder();
@@ -45,9 +45,9 @@ public class ChunkingHandler {
         }
     };
 
-    public ChunkingHandler(Server server) {
+    public ChunkingHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

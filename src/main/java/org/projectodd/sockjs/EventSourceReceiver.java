@@ -10,7 +10,7 @@ import java.util.List;
 
 public class EventSourceReceiver extends ResponseReceiver {
 
-    public EventSourceReceiver(SockJsRequest req, SockJsResponse res, Server.Options options) {
+    public EventSourceReceiver(SockJsRequest req, SockJsResponse res, SockJsServer.Options options) {
         super(req, res, options);
         protocol = "eventsource";
     }

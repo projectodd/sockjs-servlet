@@ -7,7 +7,7 @@ package org.projectodd.sockjs;
 
 public class HtmlFileReceiver extends ResponseReceiver {
 
-    public HtmlFileReceiver(SockJsRequest req, SockJsResponse res, Server.Options options) {
+    public HtmlFileReceiver(SockJsRequest req, SockJsResponse res, SockJsServer.Options options) {
         super(req, res, options);
         protocol = "htmlfile";
     }

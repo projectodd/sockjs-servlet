@@ -5,7 +5,6 @@
 
 package org.projectodd.sockjs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -95,9 +94,9 @@ public class XhrHandler {
         }
     };
 
-    public XhrHandler(Server server) {
+    public XhrHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

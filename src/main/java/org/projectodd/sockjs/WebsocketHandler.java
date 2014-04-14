@@ -64,9 +64,9 @@ public class WebsocketHandler {
         }
     };
 
-    public WebsocketHandler(Server server) {
+    public WebsocketHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

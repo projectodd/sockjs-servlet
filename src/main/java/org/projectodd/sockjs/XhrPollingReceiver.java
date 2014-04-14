@@ -7,7 +7,7 @@ package org.projectodd.sockjs;
 
 public class XhrPollingReceiver extends XhrStreamingReceiver {
 
-    public XhrPollingReceiver(SockJsRequest req, SockJsResponse res, Server.Options options) {
+    public XhrPollingReceiver(SockJsRequest req, SockJsResponse res, SockJsServer.Options options) {
         super(req, res, options);
         protocol = "xhr-polling";
         maxResponseSize = 1;

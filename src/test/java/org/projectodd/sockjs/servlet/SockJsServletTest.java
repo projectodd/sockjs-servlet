@@ -13,7 +13,7 @@ import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletInfo;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
-import org.projectodd.sockjs.Server;
+import org.projectodd.sockjs.SockJsServer;
 import org.projectodd.sockjs.SockJsConnection;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -24,9 +24,9 @@ import java.util.concurrent.CountDownLatch;
 public class SockJsServletTest {
 
     public static void main(String[] args) throws Exception {
-        Server echoServer = new Server();
+        SockJsServer echoServer = new SockJsServer();
         echoServer.options.responseLimit = 4096;
-        echoServer.onConnection(new Server.OnConnectionHandler() {
+        echoServer.onConnection(new SockJsServer.OnConnectionHandler() {
             @Override
             public void handle(final SockJsConnection connection) {
                 System.out.println("    [+] echo open    " + connection);
@@ -46,10 +46,10 @@ public class SockJsServletTest {
             }
         });
 
-        Server echoNoWsServer = new Server();
+        SockJsServer echoNoWsServer = new SockJsServer();
         echoNoWsServer.options.responseLimit = 4096;
         echoNoWsServer.options.websocket = false;
-        echoNoWsServer.onConnection(new Server.OnConnectionHandler() {
+        echoNoWsServer.onConnection(new SockJsServer.OnConnectionHandler() {
             @Override
             public void handle(final SockJsConnection connection) {
                 System.out.println("    [+] echo open    " + connection);
@@ -69,10 +69,10 @@ public class SockJsServletTest {
             }
         });
 
-        Server echoCookie = new Server();
+        SockJsServer echoCookie = new SockJsServer();
         echoCookie.options.responseLimit = 4096;
         echoCookie.options.jsessionid = true;
-        echoCookie.onConnection(new Server.OnConnectionHandler() {
+        echoCookie.onConnection(new SockJsServer.OnConnectionHandler() {
             @Override
             public void handle(final SockJsConnection connection) {
                 System.out.println("    [+] echo open    " + connection);
@@ -92,8 +92,8 @@ public class SockJsServletTest {
             }
         });
 
-        Server closeServer = new Server();
-        closeServer.onConnection(new Server.OnConnectionHandler() {
+        SockJsServer closeServer = new SockJsServer();
+        closeServer.onConnection(new SockJsServer.OnConnectionHandler() {
             @Override
             public void handle(final SockJsConnection connection) {
                 System.out.println("    [+] clos open    " + connection);
@@ -116,7 +116,7 @@ public class SockJsServletTest {
         runServer(pathHandler, "localhost", 8081);
     }
 
-    private static void installHandler(PathHandler pathHandler, Server server, String context) throws Exception {
+    private static void installHandler(PathHandler pathHandler, SockJsServer server, String context) throws Exception {
         Servlet servlet = new SockJsServlet(server);
         Class<? extends Servlet> servletClass = servlet.getClass();
         final ServletInfo servletInfo = Servlets.servlet(servletClass.getSimpleName(),

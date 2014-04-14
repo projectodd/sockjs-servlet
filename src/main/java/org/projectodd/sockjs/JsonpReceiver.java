@@ -7,7 +7,7 @@ package org.projectodd.sockjs;
 
 public class JsonpReceiver extends ResponseReceiver {
 
-    public JsonpReceiver(SockJsRequest req, SockJsResponse res, Server.Options options, String callback) {
+    public JsonpReceiver(SockJsRequest req, SockJsResponse res, SockJsServer.Options options, String callback) {
         super(req, res, options);
         this.callback = callback;
         protocol = "jsonp-polling";

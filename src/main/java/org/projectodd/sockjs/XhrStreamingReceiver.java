@@ -7,7 +7,7 @@ package org.projectodd.sockjs;
 
 public class XhrStreamingReceiver extends ResponseReceiver {
 
-    public XhrStreamingReceiver(SockJsRequest req, SockJsResponse res, Server.Options options) {
+    public XhrStreamingReceiver(SockJsRequest req, SockJsResponse res, SockJsServer.Options options) {
         super(req, res, options);
         protocol = "xhr-streaming";
     }

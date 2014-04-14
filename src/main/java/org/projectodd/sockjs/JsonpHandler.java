@@ -77,9 +77,9 @@ public class JsonpHandler {
         }
     };
 
-    public JsonpHandler(Server server) {
+    public JsonpHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

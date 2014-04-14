@@ -13,7 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 
 public class Session {
 
-    public Session(String sessionId, final Server server) {
+    public Session(String sessionId, final SockJsServer server) {
         this.sessionId = sessionId;
         this.server = server;
         heartbeatDelay = server.options.heartbeatDelay;
@@ -192,7 +192,7 @@ public class Session {
     }
 
     private String sessionId;
-    private Server server;
+    private SockJsServer server;
     private int disconnectDelay;
     private int heartbeatDelay;
     private List<String> sendBuffer;
@@ -204,6 +204,6 @@ public class Session {
     private GenericReceiver recv;
     private String closeFrame;
 
-    // TODO: Should this  be scoped to Server instances instead of across all apps?
+    // TODO: Should this  be scoped to SockJsServer instances instead of across all apps?
     private static Map<String, Session> sessions = new ConcurrentHashMap<>();
 }

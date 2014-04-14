@@ -5,9 +5,7 @@
 
 package org.projectodd.sockjs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Handlers from sockjs-node's trans-htmlfile.coffee
@@ -55,9 +53,9 @@ public class HtmlfileHandler {
         }
     };
 
-    public HtmlfileHandler(Server server) {
+    public HtmlfileHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

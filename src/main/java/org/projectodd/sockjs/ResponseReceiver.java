@@ -6,7 +6,7 @@
 package org.projectodd.sockjs;
 
 public class ResponseReceiver extends GenericReceiver {
-    public ResponseReceiver(SockJsRequest request, SockJsResponse response, Server.Options options) {
+    public ResponseReceiver(SockJsRequest request, SockJsResponse response, SockJsServer.Options options) {
         this.request = request;
         this.response = response;
         this.options = options;
@@ -41,7 +41,7 @@ public class ResponseReceiver extends GenericReceiver {
 
     protected SockJsRequest request;
     protected SockJsResponse response;
-    protected Server.Options options;
+    protected SockJsServer.Options options;
     protected int currResponseSize;
     protected int maxResponseSize = -1;
 }

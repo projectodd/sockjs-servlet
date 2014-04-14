@@ -11,9 +11,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-public class Server {
+public class SockJsServer {
 
-    public Server() {
+    public SockJsServer() {
     }
 
     public void init() {

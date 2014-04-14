@@ -22,9 +22,9 @@ public class EventsourceHandler {
         }
     };
 
-    public EventsourceHandler(Server server) {
+    public EventsourceHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

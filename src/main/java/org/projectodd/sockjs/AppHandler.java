@@ -54,9 +54,9 @@ public class AppHandler {
         }
     };
 
-    public AppHandler(Server server) {
+    public AppHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

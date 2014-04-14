@@ -181,9 +181,9 @@ public class WebHandler {
         }
     };
 
-    public WebHandler(Server server) {
+    public WebHandler(SockJsServer server) {
         this.server = server;
     }
 
-    private Server server;
+    private SockJsServer server;
 }

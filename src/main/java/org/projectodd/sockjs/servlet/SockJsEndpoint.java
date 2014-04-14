@@ -5,7 +5,7 @@
 
 package org.projectodd.sockjs.servlet;
 
-import org.projectodd.sockjs.Server;
+import org.projectodd.sockjs.SockJsServer;
 import org.projectodd.sockjs.SockJsRequest;
 import org.projectodd.sockjs.Transport;
 
@@ -17,7 +17,7 @@ import javax.websocket.Session;
 
 public class SockJsEndpoint extends Endpoint {
 
-    public SockJsEndpoint(Server server) {
+    public SockJsEndpoint(SockJsServer server) {
         this.server = server;
     }
 
@@ -40,5 +40,5 @@ public class SockJsEndpoint extends Endpoint {
         thr.printStackTrace();
     }
 
-    private Server server;
+    private SockJsServer server;
 }
