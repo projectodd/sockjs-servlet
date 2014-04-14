@@ -12,9 +12,9 @@ connect.
 
 ## Echo Example
 
-See our [echo example][examples/echo] for an example of building a
+See our [echo example](examples/echo) for an example of building a
 .war that uses SockJS Servlet. The meat of the code is in the
-[EchoServlet][examples/echo/src/main/java/org/projectodd/sockjs/examples/echo/EchoServlet.java]
+[EchoServlet](examples/echo/src/main/java/org/projectodd/sockjs/examples/echo/EchoServlet.java)
 class. To build the example from a fresh clone of this repo:
 
     cd examples/echo
