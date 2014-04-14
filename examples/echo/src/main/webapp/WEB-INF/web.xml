@@ -1,0 +1,27 @@
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+  <servlet>
+    <servlet-name>EchoServlet</servlet-name>
+    <servlet-class>org.projectodd.sockjs.examples.echo.EchoServlet</servlet-class>
+    <!-- async-supported must be true -->
+    <async-supported>true</async-supported>
+    <!-- load-on-startup must be set to a value >= 0 -->
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>EchoServlet2</servlet-name>
+    <servlet-class>org.projectodd.sockjs.examples.echo.EchoServlet</servlet-class>
+    <!-- async-supported must be true -->
+    <async-supported>true</async-supported>
+    <!-- load-on-startup must be set to a value >= 0 -->
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>EchoServlet</servlet-name>
+    <url-pattern>/echo/*</url-pattern>
+  </servlet-mapping>
+</web-app>

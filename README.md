@@ -1,4 +1,4 @@
-# SockJS-servlet
+# SockJS Servlet
 
 [![Build Status](https://travis-ci.org/projectodd/sockjs-servlet.svg?branch=master)](https://travis-ci.org/projectodd/sockjs-servlet)
 
@@ -10,7 +10,25 @@ All the protocols except raw websocket (not used by browser) have been
 implemented and I've verified that a basic browser SockJS client can
 connect.
 
-## Building
+## Echo Example
+
+See our [echo example][examples/echo] for an example of building a
+.war that uses SockJS Servlet. The meat of the code is in the
+[EchoServlet][examples/echo/src/main/java/org/projectodd/sockjs/examples/echo/EchoServlet.java]
+class. To build the example from a fresh clone of this repo:
+
+    cd examples/echo
+    mvn clean package
+
+Deploy the resulting `target/echo.war` to your favorite Servlet 3.1 or
+Java EE 7 container and open http://localhost:8080/echo (or whatever
+host/port your container runs on) to play with the example.
+
+**Note:** Right now the example does nothing but log some debug output
+to STDERR on the server-side and to console.log on the
+browser-side. It will be updated shortly to do something more useful.
+
+## Building SockJS Servlet
 
     mvn install
 

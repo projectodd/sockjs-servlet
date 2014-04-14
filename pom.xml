@@ -35,9 +35,6 @@
     </license>
   </licenses>
 
-  <modules>
-  </modules>
-
   <properties>
     <version.jboss-servlet-api_3.1_spec>1.0.0.Final</version.jboss-servlet-api_3.1_spec>
     <version.jboss-websocket-api_1.0_spec>1.0.0.Final</version.jboss-websocket-api_1.0_spec>
