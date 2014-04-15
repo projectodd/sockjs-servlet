@@ -24,10 +24,6 @@ Deploy the resulting `target/echo.war` to your favorite Servlet 3.1 or
 Java EE 7 container and open http://localhost:8080/echo (or whatever
 host/port your container runs on) to play with the example.
 
-**Note:** Right now the example does nothing but log some debug output
-to STDERR on the server-side and to console.log on the
-browser-side. It will be updated shortly to do something more useful.
-
 ## Building SockJS Servlet
 
     mvn install

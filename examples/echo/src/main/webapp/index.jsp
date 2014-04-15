@@ -1,25 +1,80 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
   <head>
-    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js">
-    </script>
-    <script>
-      var sock = new SockJS("http://<%= request.getServerName() %>:<%= request.getServerPort() %><%= request.getContextPath() %>/echo");
-      sock.onopen = function() {
-        console.log('open');
-        sock.send('testing');
-      };
-      sock.onmessage = function(e) {
-        console.log('message', e.data);
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+    <style>
+      .box {
+        width: 300px;
+        float: left;
+        margin: 0 20px 0 20px;
       }
-      sock.onclose = function() {
-        console.log('close');
+      .box div, .box input {
+        border: 1px solid;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        width: 100%;
+        padding: 0px;
+        margin: 5px;
       }
-    </script>
+      .box div {
+        border-color: grey;
+        height: 300px;
+        overflow: auto;
+      }
+      .box input {
+        height: 30px;
+      }
+      .box span {
+        margin-left: 5px;
+      }
+      h1 {
+        margin-left: 30px;
+      }
+      body {
+        background-color: #F0F0F0;
+        font-family: "Arial";
+      }
+    </style>
   </head>
-  <body>
-    <h1>SockJS Test</h1>
+  <body lang="en">
+    <h1>SockJS Echo Example</h1>
+
+    <div id="first" class="box">
+      <div></div>
+      <span>Enter some text:</span><br/>
+      <form><input autocomplete="off" value=""></input></form>
+    </div>
+
+    <script>
+      var sockjs_url = "<%= request.getContextPath() %>/echo";
+      var sockjs = new SockJS(sockjs_url);
+
+      var div  = $('#first div');
+      var inp  = $('#first input');
+      var form = $('#first form');
+
+      inp.focus();
+
+      var print = function(m, p) {
+        p = (p === undefined) ? '' : JSON.stringify(p);
+        div.append($("<code>").text(m + ' ' + p));
+        div.append($("<br>"));
+        div.scrollTop(div.scrollTop()+10000);
+      };
+
+      sockjs.onopen    = function()  {print('[*] open', sockjs.protocol);};
+      sockjs.onmessage = function(e) {print('[.] message', e.data);};
+      sockjs.onclose   = function()  {print('[*] close');};
+
+      form.submit(function() {
+        print('[ ] sending', inp.val());
+        sockjs.send(inp.val());
+        inp.val('');
+        return false;
+      });
+    </script>
   </body>
 </html>
