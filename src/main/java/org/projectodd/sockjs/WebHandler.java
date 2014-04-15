@@ -8,6 +8,8 @@ package org.projectodd.sockjs;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handlers from sockjs-node's webjs.coffee
@@ -33,10 +35,10 @@ public class WebHandler {
             if (res.finished()) {
                 return x;
             }
-            x.printStackTrace();
+            log.log(Level.FINER, "handleError", x);
             if (x instanceof DispatchException) {
                 DispatchException dx = (DispatchException) x;
-                System.err.println(dx.message);
+                log.log(Level.FINE, "DispatchException message: {0}", dx.message);
                 res.writeHead(dx.status);
                 String message = dx.message;
                 if (message == null) {
@@ -101,19 +103,19 @@ public class WebHandler {
     public DispatchFunction expectForm = new DispatchFunction() {
         @Override
         public Object handle(final SockJsRequest req, SockJsResponse res, Object _data) throws SockJsException {
-            System.err.println("!!! EXPECTING FORM");
+            log.log(Level.FINER, "Expecting form");
             final Buffer data = new Buffer(0);
             req.onData(new SockJsRequest.OnDataHandler() {
                 @Override
                 public void handle(byte[] d) throws SockJsException {
-                    System.err.println("!!! ON DATA " + new String(d));
+                    log.log(Level.FINER, "onData {0}", d);
                     data.concat(new Buffer(d));
                 }
             });
             req.onEnd(new SockJsRequest.OnEndHandler() {
                 @Override
                 public void handle() throws SockJsException {
-                    System.err.println("!!! ON END");
+                    log.log(Level.FINER, "onEnd");
                     String contentType = req.getContentType();
                     if (contentType == null) {
                         contentType = "";
@@ -131,7 +133,7 @@ public class WebHandler {
                             q = null;
                             break;
                     }
-                    System.err.println("!!! Q IS " + q);
+                    log.log(Level.FINER, "Q is {0}", q);
                     req.nextFilter.handle(q);
                 }
             });
@@ -142,19 +144,19 @@ public class WebHandler {
     public DispatchFunction expectXhr = new DispatchFunction() {
         @Override
         public Object handle(final SockJsRequest req, final SockJsResponse res, Object _data) throws SockJsException {
-            System.err.println("!!! EXPECTING XHR");
+            log.log(Level.FINER, "Expecting XHR");
             final Buffer data = new Buffer(0);
             req.onData(new SockJsRequest.OnDataHandler() {
                 @Override
                 public void handle(byte[] d) throws SockJsException {
-                    System.err.println("!!! ON DATA " + new String(d));
+                    log.log(Level.FINER, "onData {0}", d);
                     data.concat(new Buffer(d));
                 }
             });
             req.onEnd(new SockJsRequest.OnEndHandler() {
                 @Override
                 public void handle() throws SockJsException {
-                    System.err.println("!!! ON END");
+                    log.log(Level.FINER, "onEnd");
                     String contentType = req.getContentType();
                     if (contentType == null) {
                         contentType = "";
@@ -173,7 +175,7 @@ public class WebHandler {
                             q = null;
                             break;
                     }
-                    System.err.println("!!! Q IS " + q);
+                    log.log(Level.FINER, "Q is {0}", q);
                     req.nextFilter.handle(q);
                 }
             });
@@ -186,4 +188,6 @@ public class WebHandler {
     }
 
     private SockJsServer server;
+
+    private static final Logger log = Logger.getLogger(WebHandler.class.getName());
 }

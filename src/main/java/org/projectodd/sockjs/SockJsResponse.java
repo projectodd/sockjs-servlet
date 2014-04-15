@@ -5,6 +5,8 @@
 package org.projectodd.sockjs;
 
 import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public abstract class SockJsResponse {
@@ -38,6 +40,7 @@ public abstract class SockJsResponse {
     }
 
     public synchronized void write(String content) throws SockJsException {
+        log.log(Level.FINE, "Writing {0}", content);
         byte[] bytes = content.getBytes(UTF8);
         try {
             write(bytes);
@@ -52,7 +55,7 @@ public abstract class SockJsResponse {
     }
 
     public synchronized void end(String content) throws SockJsException {
-        System.err.println("!!! ENDING WITH " + content);
+        log.log(Level.FINER, "Ending with {0}", content);
         if (content != null) {
             write(content);
         }
@@ -69,4 +72,5 @@ public abstract class SockJsResponse {
     private boolean finished = false;
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
+    private static final Logger log = Logger.getLogger(SockJsResponse.class.getName());
 }

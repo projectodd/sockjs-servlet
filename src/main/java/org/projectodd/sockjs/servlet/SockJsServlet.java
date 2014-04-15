@@ -16,6 +16,8 @@ import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SockJsServlet extends HttpServlet {
 
@@ -82,7 +84,7 @@ public class SockJsServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        System.err.println("!!! SockJsServlet#service for " + req.getMethod() + " " + req.getPathInfo());
+        log.log(Level.FINE, "SockJsServlet#service for {0} {1}", new Object[] {req.getMethod(), req.getPathInfo()});
         AsyncContext asyncContext = req.startAsync();
         SockJsServletRequest sockJsReq = new SockJsServletRequest(req);
         SockJsServletResponse sockJsRes = new SockJsServletResponse(res, asyncContext);
@@ -106,4 +108,6 @@ public class SockJsServlet extends HttpServlet {
     }
 
     private SockJsServer sockJsServer;
+
+    private static final Logger log = Logger.getLogger(SockJsServlet.class.getName());
 }

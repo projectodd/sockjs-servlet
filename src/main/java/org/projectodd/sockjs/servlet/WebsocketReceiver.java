@@ -13,6 +13,8 @@ import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * WebsocketReceiver logic from sockjs-node's trans-websocket.coffee
@@ -80,10 +82,12 @@ public class WebsocketReceiver extends GenericReceiver {
         try {
             ws.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Normal closure"));
         } catch (IOException x) {
-            x.printStackTrace();
+            log.log(Level.FINE, "Error closing receiver", x);
         }
         ws = null;
     }
 
     private Session ws;
+
+    private static final Logger log = Logger.getLogger(WebsocketReceiver.class.getName());
 }

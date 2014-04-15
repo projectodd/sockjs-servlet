@@ -7,6 +7,8 @@ package org.projectodd.sockjs;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handlers from sockjs-node's trans-xhr.coffee
@@ -27,7 +29,7 @@ public class XhrHandler {
         @Override
         @SuppressWarnings("unchecked")
         public Object handle(SockJsRequest req, SockJsResponse res, Object data) throws SockJsException {
-            System.err.println("!!! XHR SEND");
+            log.log(Level.FINE, "XHR send");
             if (data == null || data.toString().length() == 0) {
                 throw new DispatchException(500, "Payload expected.");
             }
@@ -99,4 +101,6 @@ public class XhrHandler {
     }
 
     private SockJsServer server;
+
+    private static final Logger log = Logger.getLogger(XhrHandler.class.getName());
 }

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Session {
 
@@ -21,7 +23,7 @@ public class Session {
         sendBuffer = new ArrayList<>();
         readyState = Transport.CONNECTING;
         if (sessionId != null && sessionId.length() > 0) {
-            System.err.println("!!! Adding session " + sessionId);
+            log.log(Level.FINE, "Adding session {0}", sessionId);
             sessions.put(sessionId, this);
         }
         timeoutCb = new Runnable() {
@@ -138,14 +140,14 @@ public class Session {
         connection.emitClose();
         connection = null;
         if (sessionId != null) {
-            System.err.println("!!! Removing session " + sessionId);
+            log.log(Level.FINE, "Removing session {0}", sessionId);
             sessions.remove(sessionId);
             sessionId = null;
         }
     }
 
     public void didMessage(String payload) {
-        System.err.println("!!! didMessage");
+        log.log(Level.FINER, "didMessage {0}", payload);
         if (readyState == Transport.OPEN) {
             connection.emitData(payload);
         }
@@ -206,4 +208,5 @@ public class Session {
 
     // TODO: Should this  be scoped to SockJsServer instances instead of across all apps?
     private static Map<String, Session> sessions = new ConcurrentHashMap<>();
+    private static final Logger log = Logger.getLogger(Session.class.getName());
 }

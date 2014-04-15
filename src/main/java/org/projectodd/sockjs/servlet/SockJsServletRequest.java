@@ -13,6 +13,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SockJsServletRequest extends SockJsRequest implements ReadListener {
 
@@ -89,9 +91,10 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
 
     @Override
     public void onError(Throwable throwable) {
-        // TODO: Something better
-        throwable.printStackTrace();
+        log.log(Level.WARNING, "Error in SockJS request ReadListener", throwable);
     }
 
     private HttpServletRequest request;
+
+    private static final Logger log = Logger.getLogger(SockJsServletRequest.class.getName());
 }

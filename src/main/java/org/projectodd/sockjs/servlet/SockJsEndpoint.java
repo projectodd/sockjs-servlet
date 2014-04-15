@@ -13,6 +13,8 @@ import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class SockJsEndpoint extends Endpoint {
@@ -23,22 +25,22 @@ public class SockJsEndpoint extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
-        System.err.println("!!! onOpen");
+        log.log(Level.FINER, "onOpen");
         SockJsRequest req = new SockJsWebsocketRequest(session);
         Transport.registerNoSession(req, server, new WebsocketReceiver(session));
     }
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
-        System.err.println("!!! onClose");
+        log.log(Level.FINER, "onClose {0}", closeReason);
     }
 
     @Override
     public void onError(Session session, Throwable thr) {
-        System.err.println("!!! onError");
-        // TODO: something better
-        thr.printStackTrace();
+        log.log(Level.WARNING, "Error in SockJS WebSocket endpoint", thr);
     }
 
     private SockJsServer server;
+
+    private static final Logger log = Logger.getLogger(SockJsEndpoint.class.getName());
 }
