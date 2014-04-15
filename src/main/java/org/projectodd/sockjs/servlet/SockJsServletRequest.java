@@ -61,7 +61,6 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
     @Override
     public void onDataAvailable() throws IOException {
         ServletInputStream inputStream = request.getInputStream();
-        System.err.println("!!! onDataAvailable");
         do {
             byte[] buffer = new byte[1024*4];
             int length = inputStream.read(buffer);
@@ -79,7 +78,6 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
 
     @Override
     public void onAllDataRead() throws IOException {
-        System.err.println("!!! onAllDataRead");
         if (onEndHandler != null) {
             try {
                 onEndHandler.handle();

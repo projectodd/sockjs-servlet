@@ -16,7 +16,6 @@ public class JsonpReceiver extends ResponseReceiver {
 
     @Override
     public boolean doSendFrame(String payload) {
-        System.err.println("!!! JsonpReceiver doSendFrame " + payload);
         return super.doSendFrame(callback + "(" + Utils.jsonStringify(payload) + ");\r\n");
     }
 

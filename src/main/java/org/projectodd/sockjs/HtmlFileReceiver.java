@@ -14,7 +14,6 @@ public class HtmlFileReceiver extends ResponseReceiver {
 
     @Override
     public boolean doSendFrame(String payload) {
-        System.err.println("!!! HtmlFileReceiver doSendFrame " + payload);
         return super.doSendFrame("<script>\np(" + Utils.jsonStringify(payload) + ");\n</script>\r\n");
     }
 }

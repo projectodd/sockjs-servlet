@@ -38,8 +38,6 @@ public abstract class SockJsResponse {
     }
 
     public synchronized void write(String content) throws SockJsException {
-        System.err.println("!!! WRITING " + content);
-
         byte[] bytes = content.getBytes(UTF8);
         try {
             write(bytes);

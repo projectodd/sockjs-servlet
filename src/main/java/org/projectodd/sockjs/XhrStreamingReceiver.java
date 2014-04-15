@@ -14,7 +14,6 @@ public class XhrStreamingReceiver extends ResponseReceiver {
 
     @Override
     public boolean doSendFrame(String payload) {
-        System.err.println("!!! XhrStreamingReceiver doSendFrame " + payload);
         return super.doSendFrame(payload + "\n");
     }
 }

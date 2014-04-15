@@ -17,7 +17,6 @@ public class EventSourceReceiver extends ResponseReceiver {
 
     @Override
     public boolean doSendFrame(String payload) {
-        System.err.println("!!! EventSourceReceiver doSendFrame " + payload);
         String charsToEscape = new String(new char[] {'\r', '\n', 0});
         List<String> data = Arrays.asList("data: ", Utils.escapeSelected(payload, charsToEscape), "\r\n\r\n");
         return super.doSendFrame(Utils.join(data, ""));
