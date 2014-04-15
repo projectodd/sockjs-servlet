@@ -86,6 +86,7 @@ public class SockJsServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         log.log(Level.FINE, "SockJsServlet#service for {0} {1}", new Object[] {req.getMethod(), req.getPathInfo()});
         AsyncContext asyncContext = req.startAsync();
+        asyncContext.setTimeout(0); // no timeout
         SockJsServletRequest sockJsReq = new SockJsServletRequest(req);
         SockJsServletResponse sockJsRes = new SockJsServletResponse(res, asyncContext);
         try {
