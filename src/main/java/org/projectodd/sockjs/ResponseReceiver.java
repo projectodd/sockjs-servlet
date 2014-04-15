@@ -21,7 +21,7 @@ public class ResponseReceiver extends GenericReceiver {
             response.write(payload);
             r = true;
         } catch (SockJsException x) {
-            didClose();
+            didAbort();
             return r;
         }
         if (maxResponseSize >= 0 && currResponseSize >= maxResponseSize) {

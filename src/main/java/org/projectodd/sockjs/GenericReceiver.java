@@ -9,6 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GenericReceiver {
+
+    protected void didAbort() {
+        Session session = this.session;
+        didClose();
+        if (session != null) {
+            session.didTimeout();
+        }
+    }
+
     protected void didClose() {
         if (session != null) {
             session.unregister();

@@ -118,7 +118,7 @@ public class Session {
         }
     }
 
-    private void didTimeout() {
+    public void didTimeout() {
         if (toTref != null) {
             server.clearTimeout(toTref);
             toTref = null;
