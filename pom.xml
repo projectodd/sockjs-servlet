@@ -218,7 +218,7 @@
                       <arg value="-classpath"/>
                       <arg value="${test_classpath}"/>
                       <arg value="-DlogFile=${basedir}/target/server-output.log"/>
-                      <arg value="org.projectodd.sockjs.servlet.SockJsServletTest"/>
+                      <arg value="org.projectodd.sockjs.SockJsProtocolTestServer"/>
                     </exec>
                     <exec executable="make" dir="${basedir}/sockjs-protocol"
                           failonerror="true">
@@ -276,7 +276,7 @@
                     <exec executable="pkill">
                       <arg value="-9"/>
                       <arg value="-f"/>
-                      <arg value="SockJsServletTest"/>
+                      <arg value="SockJsProtocolTestServer"/>
                     </exec>
                     <exec executable="/bin/bash" dir="${basedir}" failonerror="true">
                       <arg value="${basedir}/support/check_protocol_test_results.sh"/>

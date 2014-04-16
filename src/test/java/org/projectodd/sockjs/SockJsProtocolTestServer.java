@@ -2,23 +2,14 @@
  * Copyright (C) 2014 Red Hat, Inc, and individual contributors.
  */
 
-package org.projectodd.sockjs.servlet;
+package org.projectodd.sockjs;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.PathHandler;
-import io.undertow.servlet.Servlets;
-import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.api.ServletInfo;
-import io.undertow.servlet.util.ImmediateInstanceFactory;
-import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
-import org.projectodd.sockjs.SockJsConnection;
-import org.projectodd.sockjs.SockJsServer;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-import javax.servlet.Servlet;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
@@ -30,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-public class SockJsServletTest {
+public class SockJsProtocolTestServer extends AbstractSockJsTest {
 
     public static void main(String[] args) throws Exception {
         configureLogging(Level.FINEST);
@@ -117,48 +108,17 @@ public class SockJsServletTest {
             }
         });
 
+        SockJsProtocolTestServer servletTest = new SockJsProtocolTestServer();
         PathHandler pathHandler = new PathHandler();
-        installHandler(pathHandler, echoServer, "/echo");
-        installHandler(pathHandler, echoNoWsServer, "/disabled_websocket_echo");
-        installHandler(pathHandler, echoCookie, "/cookie_needed_echo");
-        installHandler(pathHandler, closeServer, "/close");
-
-        runServer(pathHandler, "localhost", 8081);
+        servletTest.installHandler(pathHandler, echoServer, "/echo");
+        servletTest.installHandler(pathHandler, echoNoWsServer, "/disabled_websocket_echo");
+        servletTest.installHandler(pathHandler, echoCookie, "/cookie_needed_echo");
+        servletTest.installHandler(pathHandler, closeServer, "/close");
+        servletTest.runServer(pathHandler, "localhost", 8081);
     }
 
-    private static void installHandler(PathHandler pathHandler, SockJsServer server, String context) throws Exception {
-        Servlet servlet = new SockJsServlet(server);
-        Class<? extends Servlet> servletClass = servlet.getClass();
-        final ServletInfo servletInfo = Servlets.servlet(servletClass.getSimpleName(),
-                servletClass,
-                new ImmediateInstanceFactory<>(servlet));
-        servletInfo.addMapping("/*");
-        // LoadOnStartup is required for our websocket Endpoint to work
-        servletInfo.setLoadOnStartup(0);
-        // AsyncSupported is required
-        servletInfo.setAsyncSupported(true);
-        final DeploymentInfo servletBuilder = Servlets.deployment()
-                .setClassLoader(SockJsServletTest.class.getClassLoader())
-                .setContextPath(context)
-                .setDeploymentName(context)
-                // Because Undertow tries to be too smart and ignore our flushes
-                .setIgnoreFlush(false)
-                .addServlet(servletInfo);
-        // Required for any websocket support in undertow
-        final WebSocketDeploymentInfo wsInfo = new WebSocketDeploymentInfo();
-        servletBuilder.addServletContextAttribute(WebSocketDeploymentInfo.ATTRIBUTE_NAME, wsInfo);
-        final DeploymentManager manager = Servlets.defaultContainer().addDeployment(servletBuilder);
-        manager.deploy();
-        final HttpHandler servletHandler = manager.start();
-
-        pathHandler.addPrefixPath(context, servletHandler);
-    }
-
-    private static void runServer(HttpHandler handler, String host, int port) throws Exception {
-        Undertow undertow = Undertow.builder()
-                .addHttpListener(port, host)
-                .setHandler(handler)
-                .build();
+    private void runServer(HttpHandler handler, String host, int port) throws Exception {
+        Undertow undertow = createUndertow(handler, host, port);
 
         final CountDownLatch latch = new CountDownLatch(1);
         SignalHandler signalHandler = new SignalHandler() {
