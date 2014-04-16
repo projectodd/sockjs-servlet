@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-public class SockJSConnectionTest extends AbstractSockJsTest {
+public class SockJsConnectionTest extends AbstractSockJsTest {
 
     @Before
     public void startServer() throws Exception {
