@@ -42,7 +42,10 @@ this. Once you get that done:
 There are a couple of tests that are expected to fail just due to
 differences in HTTP connection handling between Node and Servlet
 containers. The build won't fail if any of these expected failures
-occur, but will if anything unexpected fails.
+occur, but will if anything unexpected fails. If there are any
+unexpected failures, `target/sockjs-protocol-output.log` and
+`target/server-output.log` are helpful in figuring out what went
+wrong.
 
 
 [undertow]: http://undertow.io/

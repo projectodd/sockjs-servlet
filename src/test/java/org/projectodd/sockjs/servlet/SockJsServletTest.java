@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.FileHandler;
 import java.util.logging.Filter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -174,8 +175,12 @@ public class SockJsServletTest {
         latch.await();
     }
 
-    private static void configureLogging(Level level) {
+    private static void configureLogging(Level level) throws Exception {
         Logger rootLogger = Logger.getLogger("");
+        String logFile = System.getProperty("logFile");
+        if (logFile != null) {
+            rootLogger.addHandler(new FileHandler(logFile));
+        }
         for (Handler handler : rootLogger.getHandlers()) {
             handler.setFilter(new Filter() {
                 private String[] noisyLoggers = new String[] { "com.sun.jmx", "javax.management", "org.xnio" };

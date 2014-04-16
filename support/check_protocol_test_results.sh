@@ -1,6 +1,6 @@
 #!/bin/bash
 
-file=target/sockjs-protocol-output.txt
+file=target/sockjs-protocol-output.log
 
 function show_failures() {
   sed -e "/FAIL: test_headersSanity/,+6d" "$file" |

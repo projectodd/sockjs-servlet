@@ -217,6 +217,7 @@
                     <exec executable="java" dir="${basedir}" spawn="true">
                       <arg value="-classpath"/>
                       <arg value="${test_classpath}"/>
+                      <arg value="-DlogFile=${basedir}/target/server-output.log"/>
                       <arg value="org.projectodd.sockjs.servlet.SockJsServletTest"/>
                     </exec>
                     <exec executable="make" dir="${basedir}/sockjs-protocol"
@@ -237,7 +238,7 @@
                     <exec executable="${basedir}/sockjs-protocol/venv/bin/python"
                           dir="${basedir}/sockjs-protocol"
                           resultProperty="build_error_code"
-                          output="${basedir}/target/sockjs-protocol-output.txt">
+                          output="${basedir}/target/sockjs-protocol-output.log">
                       <arg value="sockjs-protocol-0.3.3.py"/>
                       <arg value="BaseUrlGreeting"/>
                       <arg value="IframePage"/>
