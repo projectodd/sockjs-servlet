@@ -13,17 +13,26 @@ import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletInfo;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
-import org.projectodd.sockjs.SockJsServer;
 import org.projectodd.sockjs.SockJsConnection;
+import org.projectodd.sockjs.SockJsServer;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 import javax.servlet.Servlet;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Filter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class SockJsServletTest {
 
     public static void main(String[] args) throws Exception {
+        configureLogging(Level.FINEST);
         SockJsServer echoServer = new SockJsServer();
         echoServer.options.responseLimit = 4096;
         echoServer.onConnection(new SockJsServer.OnConnectionHandler() {
@@ -163,5 +172,53 @@ public class SockJsServletTest {
         Signal.handle(new Signal("INT"), signalHandler);
         Signal.handle(new Signal("TERM"), signalHandler);
         latch.await();
+    }
+
+    private static void configureLogging(Level level) {
+        Logger rootLogger = Logger.getLogger("");
+        for (Handler handler : rootLogger.getHandlers()) {
+            handler.setFilter(new Filter() {
+                private String[] noisyLoggers = new String[] { "com.sun.jmx", "javax.management", "org.xnio" };
+                @Override
+                public boolean isLoggable(LogRecord record) {
+                    String loggerName = record.getLoggerName();
+                    for (String noisyLogger : noisyLoggers) {
+                        if (loggerName != null && loggerName.startsWith(noisyLogger)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            });
+            handler.setLevel(level);
+            handler.setFormatter(new java.util.logging.Formatter() {
+                // Totally ripped off from java.util.logging.SimpleFormatter
+                private final String format = "%1$tb %1$td, %1$tY %1$tl:%1$tM:%1$tS %1$Tp %4$s [%2$s] %5$s%6$s%n";
+                private final Date dat = new Date();
+                @Override
+                public synchronized String format(LogRecord record) {
+                    dat.setTime(record.getMillis());
+                    String source = record.getLoggerName();
+                    String message = formatMessage(record);
+                    String throwable = "";
+                    if (record.getThrown() != null) {
+                        StringWriter sw = new StringWriter();
+                        PrintWriter pw = new PrintWriter(sw);
+                        pw.println();
+                        record.getThrown().printStackTrace(pw);
+                        pw.close();
+                        throwable = sw.toString();
+                    }
+                    return String.format(format,
+                            dat,
+                            source,
+                            record.getLoggerName(),
+                            record.getLevel().getName(),
+                            message,
+                            throwable);
+                }
+            });
+        }
+        rootLogger.setLevel(level);
     }
 }
