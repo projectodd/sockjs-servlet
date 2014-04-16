@@ -2,6 +2,7 @@ package org.projectodd.sockjs;
 
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
+import io.undertow.servlet.api.DeploymentManager;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -50,7 +51,10 @@ public class SockJSConnectionTest extends AbstractSockJsTest {
             }
         });
 
-        installHandler(pathHandler, server, "/foo");
+        String context = "/foo";
+        DeploymentManager manager = createDeploymentManager(server, context);
+        manager.deploy();
+        pathHandler.addPrefixPath(context, manager.start());
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(baseUrl + "/foo/000/001/xhr?foo=bar");
@@ -61,6 +65,7 @@ public class SockJSConnectionTest extends AbstractSockJsTest {
         response.close();
 
         assertTrue(connected.get());
+        manager.stop();
     }
 
     @Test
