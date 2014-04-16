@@ -7,6 +7,9 @@ package org.projectodd.sockjs;
 
 public class Transport {
 
+    public static enum READY_STATE {
+        CONNECTING, OPEN, CLOSING, CLOSED
+    }
     public static int CONNECTING = 0;
     public static int OPEN = 1;
     public static int CLOSING = 2;

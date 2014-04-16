@@ -5,6 +5,8 @@
 
 package org.projectodd.sockjs;
 
+import java.util.Map;
+
 public class SockJsConnection {
 
     public SockJsConnection(Session session) {
@@ -17,26 +19,60 @@ public class SockJsConnection {
         return "<SockJSConnection " + id + ">";
     }
 
-    public boolean write(String payload) {
-        return session.send(payload);
+    /**
+     * Sends a message over the opened connection. A message must be a
+     * non-empty string. It's illegal to send a message after the connection
+     * was closed (either after 'close' or 'end' method or 'close' event).
+     *
+     * @param message the message to send
+     * @return true on success, false on failure
+     */
+    public boolean write(String message) {
+        return session.send(message);
     }
 
-    public void end(String string) {
-        if (string != null) {
-            write(string);
+    /**
+     * Asks the remote client to disconnect with default 'code' and 'reason' values.
+     */
+    public void end() {
+        end();
+    }
+
+    /**
+     * Write a message and then ask the remote client to disconnect with
+     * default 'code' and 'reason' values.
+     *
+     * @param message message to write
+     */
+    public void end(String message) {
+        if (message != null) {
+            write(message);
         }
-        close();
+        end();
     }
 
+    /**
+     * Ask the remote client to disconnect with default 'code' and 'reason'
+     * values
+     *
+     * @return false if the connection was already closed, true otherwise
+     */
     public boolean close() {
         return session.close();
     }
+
+    /**
+     * Asks the remote client to disconnect with the given 'code' and 'reason' values
+     * @param code The code, typically one of {@link javax.websocket.CloseReason.CloseCodes#getCode()}
+     * @param reason A string describing the reason for closure
+     * @return false if the connection was already closed, true otherwise
+     */
     public boolean close(int code, String reason) {
         return session.close(code, reason);
     }
 
     public void destroy() {
-        end(null);
+        end();
     }
 
     /**
@@ -54,7 +90,8 @@ public class SockJsConnection {
     }
 
     /**
-     * Called when a connection to a client is closed
+     * Called when a connection to a client is closed. This is triggered
+     * exactly once for every connection.
      *
      * @param onCloseHandler The handler to call when a connection is closed
      */
@@ -71,8 +108,51 @@ public class SockJsConnection {
     private OnDataHandler onDataHandler;
     private OnCloseHandler onCloseHandler;
 
+    /**
+     * Unique identifier of this connection
+     */
     public String id;
+
+    /**
+     * Last known IP address of the client.
+     */
+    public String remoteAddress;
+
+    /**
+     * Last known port number of the client.
+     */
+    public String remotePort;
+
+    /**
+     * Hash containing various headers copied from last request received on
+     * this connection. Exposed headers include: `origin`, `referer` and
+     * `x-forwarded-for` (and friends). This explicitly does not grant access
+     * to the `cookie` header, as using it may easily lead to security issues
+     * (for details read the section "Authorisation" at
+     * https://github.com/sockjs/sockjs-node).
+     */
+    public Map<String, String> headers;
+
+    /**
+     * The entire url string copied from the last request.
+     */
+    public String url;
+
+    /**
+     * `pathname` from parsed url, for convenience.
+     */
+    public String pathname;
+
+    /**
+     * Protocol used by the connection. Keep in mind that some protocols are
+     * indistinguishable - for example "xhr-polling" and "xdr-polling".
+     */
     public String protocol;
+
+    /**
+     * Current state of the connection
+     */
+    public Transport.READY_STATE readyState;
 
     public static interface OnDataHandler {
         public void handle(String message);

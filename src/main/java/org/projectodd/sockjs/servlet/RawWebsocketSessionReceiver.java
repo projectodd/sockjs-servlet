@@ -32,7 +32,7 @@ public class RawWebsocketSessionReceiver extends Session {
             }
         });
 
-        readyState = Transport.OPEN;
+        readyState = Transport.READY_STATE.OPEN;
         recv = new GenericReceiver() {
             {
                 protocol = "websocket-raw";
@@ -48,14 +48,14 @@ public class RawWebsocketSessionReceiver extends Session {
 
     @Override
     public void didMessage(String payload) {
-        if (readyState == Transport.OPEN) {
+        if (readyState == Transport.READY_STATE.OPEN) {
             connection.emitData(payload);
         }
     }
 
     @Override
     public boolean send(String payload) {
-        if (readyState != Transport.OPEN) {
+        if (readyState != Transport.READY_STATE.OPEN) {
             return false;
         }
         try {
@@ -68,10 +68,10 @@ public class RawWebsocketSessionReceiver extends Session {
 
     @Override
     public boolean close(int status, String reason) {
-        if (readyState != Transport.OPEN) {
+        if (readyState != Transport.READY_STATE.OPEN) {
             return false;
         }
-        readyState = Transport.CLOSING;
+        readyState = Transport.READY_STATE.CLOSING;
         try {
             ws.close(new CloseReason(CloseReason.CloseCodes.getCloseCode(status), reason));
         } catch (IOException ex) {
@@ -91,7 +91,7 @@ public class RawWebsocketSessionReceiver extends Session {
         }
         ws = null;
 
-        readyState = Transport.CLOSED;
+        readyState = Transport.READY_STATE.CLOSED;
         connection.emitClose();
         connection = null;
     }
