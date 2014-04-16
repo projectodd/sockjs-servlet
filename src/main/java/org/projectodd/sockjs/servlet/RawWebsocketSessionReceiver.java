@@ -92,7 +92,6 @@ public class RawWebsocketSessionReceiver extends Session {
         ws = null;
 
         readyState = Transport.CLOSED;
-        connection.emitEnd();
         connection.emitClose();
         connection = null;
     }

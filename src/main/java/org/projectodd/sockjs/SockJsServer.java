@@ -11,6 +11,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The main entry point for handling SockJS connections.
+ *
+ * Typically a SockJsServer is created, its {@link #options} set, an
+ * {@link #onConnection} handler added, and the server is then passed to a
+ * SockJsServlet to handle the routing of requests.
+ */
 public class SockJsServer {
 
     public SockJsServer() {
@@ -73,7 +80,7 @@ public class SockJsServer {
     }
 
     protected String p(String match) {
-        return "^" + options.prefix + match + "[/]?$";
+        return "^" + match + "[/]?$";
     }
 
     protected String[] t(String match) {
@@ -88,6 +95,12 @@ public class SockJsServer {
         return new DispatchFunction[] { appHandler.hSid, xhrHandler.xhrCors, webHandler.cacheFor, optionsFilter, webHandler.expose };
     }
 
+    /**
+     * Handle incoming connections - a SockJsServer isn't very useful
+     * unless you set an OnConnectionHandler here.
+     * 
+     * @param handler The handler to call when a new connection is established
+     */
     public void onConnection(OnConnectionHandler handler) {
         onConnectionHandler = handler;
     }
@@ -121,14 +134,79 @@ public class SockJsServer {
     public Options options = new Options();
 
     public static class Options {
-        public String prefix = "";
-        public int responseLimit = 128 * 1024;
-        public boolean websocket = true;
-        public boolean jsessionid = false;
-        public int heartbeatDelay = 25000;
-        public int disconnectDelay = 5000;
+        /**
+         * Transports which don't support cross-domain communication natively
+         * ('eventsource' to name one) use an iframe trick. A simple page is
+         * served from the SockJS server (using its foreign domain) and is
+         * placed in an invisible iframe. Code run from this iframe doesn't
+         * need to worry about cross-domain issues, as it's being run from a
+         * domain local to the SockJS server. This iframe also needs to load
+         * the SockJS javascript client library, and this option lets you
+         * specify its url (if you're unsure, point it to the latest minified
+         * SockJS client release, this is the default). You must explicitly
+         * specify this url on the server side for security reasons - we don't
+         * want the possibility of running any foreign javascript within the
+         * SockJS domain (aka cross site scripting attack). Also, the sockjs
+         * javascript library is probably already cached by the browser - it
+         * makes sense to reuse the sockjs url you're normally using.
+         */
         public String sockjsUrl = "http://cdn.sockjs.org/sockjs-0.3.min.js";
+
+        /**
+         * Most streaming transports save responses on the client side and
+         * don't free memory used by delivered messages. Such transports need
+         * to be garbage-collected once in a while. `responseLimit` sets a
+         * maximum number of bytes that can be send over a single http
+         * streaming request before it will be closed. After that client
+         * needs to open new request. Setting this value to one effectively
+         * disables streaming and will make streaming transports to behave
+         * like polling transports. The default value is 128K.
+         */
+        public int responseLimit = 128 * 1024;
+
+        /**
+         * Some load balancers don't support websockets. This option can be
+         * used to disable websockets support by the server. By default
+         * websockets are enabled.
+         */
+        public boolean websocket = true;
+
+        /**
+         * Some hosting providers enable sticky sessions only to requests
+         * that have a JSESSIONID cookie set. This setting controls if the
+         * server should set this cookie to a dummy value. By default setting
+         * of a JSESSIONID cookie is disabled.
+         */
+        public boolean jsessionid = false;
+
+        /**
+         * In order to keep proxies and load balancers from closing long
+         * running http requests we need to pretend that the connection is
+         * active and send a heartbeat packet once in a while. This setting
+         * controls how often this is done. By default a heartbeat packet
+         * is sent every 25 seconds.
+         */
+        public int heartbeatDelay = 25000;
+
+        /**
+         * The server sends a `close` event when a client receiving
+         * connection has not been seen for a while. This delay is
+         * configured by this setting. By default the `close` event will
+         * be emitted when a receiving connection wasn't seen for 5 seconds.
+         */
+        public int disconnectDelay = 5000;
+
+        /**
+         * Users can specify a base URL which all client requests after an
+         * initial info request will be made against. This probably is more
+         * useful as a method and not a static string, but that's not
+         * implemented yet.
+         */
         public String baseUrl = null;
+
+        // sockjs-node exposes some options as callback functions
+        // TODO: Add jsessionidCallback
+        // TODO: Add baseUrlCallback
     }
 
     public static interface OnConnectionHandler {

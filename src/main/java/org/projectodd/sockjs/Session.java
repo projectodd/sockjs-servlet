@@ -136,7 +136,6 @@ public class Session {
             throw new RuntimeException("RECV_STILL_THERE");
         }
         readyState = Transport.CLOSED;
-        connection.emitEnd();
         connection.emitClose();
         connection = null;
         if (sessionId != null) {

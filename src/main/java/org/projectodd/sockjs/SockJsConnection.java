@@ -39,6 +39,11 @@ public class SockJsConnection {
         end(null);
     }
 
+    /**
+     * Called for every message received from a client
+     *
+     * @param onDataHandler The handler to call when messages arrive
+     */
     public void onData(OnDataHandler onDataHandler) {
         this.onDataHandler = onDataHandler;
     }
@@ -48,15 +53,11 @@ public class SockJsConnection {
         }
     }
 
-    public void onEnd(OnEndHandler onEndHandler) {
-        this.onEndHandler = onEndHandler;
-    }
-    public void emitEnd() {
-        if (onEndHandler != null) {
-            onEndHandler.handle();
-        }
-    }
-
+    /**
+     * Called when a connection to a client is closed
+     *
+     * @param onCloseHandler The handler to call when a connection is closed
+     */
     public void onClose(OnCloseHandler onCloseHandler) {
         this.onCloseHandler = onCloseHandler;
     }
@@ -68,7 +69,6 @@ public class SockJsConnection {
 
     private Session session;
     private OnDataHandler onDataHandler;
-    private OnEndHandler onEndHandler;
     private OnCloseHandler onCloseHandler;
 
     public String id;
@@ -76,10 +76,6 @@ public class SockJsConnection {
 
     public static interface OnDataHandler {
         public void handle(String message);
-    }
-
-    public static interface OnEndHandler {
-        public void handle();
     }
 
     public static interface OnCloseHandler {
