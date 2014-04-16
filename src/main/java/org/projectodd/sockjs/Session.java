@@ -79,8 +79,23 @@ public class Session {
     }
 
     protected void decorateConnection(SockJsRequest req) {
-        // TODO: actually decorate this sucker
+        connection.remoteAddress = req.getRemoteAddr();
+        connection.remotePort = req.getRemotePort();
+
+        connection.url = req.getUrl();
+        connection.pathname = req.getPath();
+        connection.prefix = req.getPrefix();
         connection.protocol = recv.protocol;
+
+        String[] headerNames = new String[] {"referer", "x-client-ip",
+                "x-forwarded-for", "x-cluster-client-ip", "via", "x-real-ip",
+                "host", "user-agent", "accept-language"};
+        for (String headerName : headerNames) {
+            String value = req.getHeader(headerName);
+            if (value != null) {
+                connection.headers.put(headerName, value);
+            }
+        }
     }
 
     public void unregister() {

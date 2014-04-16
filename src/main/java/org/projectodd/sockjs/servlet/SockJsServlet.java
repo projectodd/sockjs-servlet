@@ -47,12 +47,13 @@ public class SockJsServlet extends HttpServlet {
         if (sockJsServer.options.websocket) {
             // Make sure we listen on all possible mappings of the servlet
             for (String mapping : getServletContext().getServletRegistration(getServletName()).getMappings()) {
-                String commonPrefix = extractPrefixFromMapping(mapping);
+                final String commonPrefix = extractPrefixFromMapping(mapping);
                 ServerEndpointConfig.Configurator configurator = new ServerEndpointConfig.Configurator() {
                     @Override
                     public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
                         try {
-                            return endpointClass.getConstructor(SockJsServer.class).newInstance(sockJsServer);
+                            return endpointClass.getConstructor(SockJsServer.class, String.class)
+                                    .newInstance(sockJsServer, commonPrefix);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }

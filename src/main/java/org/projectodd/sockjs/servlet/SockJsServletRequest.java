@@ -28,8 +28,32 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
     }
 
     @Override
+    public String getUrl() {
+        String url = request.getRequestURI();
+        if (request.getQueryString() != null) {
+            url += "?" + request.getQueryString();
+        }
+        return url;
+    }
+
+    @Override
     public String getPath() {
         return request.getPathInfo();
+    }
+
+    @Override
+    public String getPrefix() {
+        return request.getContextPath();
+    }
+
+    @Override
+    public String getRemoteAddr() {
+        return request.getRemoteAddr();
+    }
+
+    @Override
+    public int getRemotePort() {
+        return request.getRemotePort();
     }
 
     @Override

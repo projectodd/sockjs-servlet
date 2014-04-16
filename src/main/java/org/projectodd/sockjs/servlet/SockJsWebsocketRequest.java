@@ -7,8 +7,9 @@ import java.util.List;
 
 public class SockJsWebsocketRequest extends SockJsRequest {
 
-    public SockJsWebsocketRequest(Session session) {
+    public SockJsWebsocketRequest(Session session, String prefix) {
         this.session = session;
+        this.prefix = prefix;
     }
 
     @Override
@@ -18,8 +19,33 @@ public class SockJsWebsocketRequest extends SockJsRequest {
     }
 
     @Override
+    public String getUrl() {
+        return session.getRequestURI().toString();
+    }
+
+    @Override
     public String getPath() {
-        return session.getRequestURI().getPath();
+        String path = session.getRequestURI().getPath();
+        if (path != null && path.startsWith(prefix)) {
+            path = path.substring(prefix.length());
+        }
+        return path;
+    }
+
+    @Override
+    public String getPrefix() {
+        return prefix;
+    }
+
+    @Override
+    public String getRemoteAddr() {
+        // TODO: grab this during the handshake process
+        return null;
+    }
+
+    @Override
+    public int getRemotePort() {
+        return 0;
     }
 
     @Override
@@ -47,4 +73,5 @@ public class SockJsWebsocketRequest extends SockJsRequest {
     }
 
     private Session session;
+    private String prefix;
 }

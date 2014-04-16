@@ -5,6 +5,7 @@
 
 package org.projectodd.sockjs;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SockJsConnection {
@@ -121,7 +122,7 @@ public class SockJsConnection {
     /**
      * Last known port number of the client.
      */
-    public String remotePort;
+    public int remotePort;
 
     /**
      * Hash containing various headers copied from last request received on
@@ -131,7 +132,7 @@ public class SockJsConnection {
      * (for details read the section "Authorisation" at
      * https://github.com/sockjs/sockjs-node).
      */
-    public Map<String, String> headers;
+    public Map<String, String> headers = new HashMap<>();
 
     /**
      * The entire url string copied from the last request.
@@ -144,6 +145,12 @@ public class SockJsConnection {
     public String pathname;
 
     /**
+     * Prefix of the url on which the request was handled. For SockJsServlet,
+     * this is the servlet's context path
+     */
+    public String prefix;
+
+    /**
      * Protocol used by the connection. Keep in mind that some protocols are
      * indistinguishable - for example "xhr-polling" and "xdr-polling".
      */
@@ -152,7 +159,9 @@ public class SockJsConnection {
     /**
      * Current state of the connection
      */
-    public Transport.READY_STATE readyState;
+    public Transport.READY_STATE getReadyState() {
+        return session.readyState;
+    }
 
     public static interface OnDataHandler {
         public void handle(String message);

@@ -19,14 +19,15 @@ import java.util.logging.Logger;
 
 public class SockJsEndpoint extends Endpoint {
 
-    public SockJsEndpoint(SockJsServer server) {
+    public SockJsEndpoint(SockJsServer server, String prefix) {
         this.server = server;
+        this.prefix = prefix;
     }
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
         log.log(Level.FINER, "onOpen");
-        SockJsRequest req = new SockJsWebsocketRequest(session);
+        SockJsRequest req = new SockJsWebsocketRequest(session, prefix);
         Transport.registerNoSession(req, server, new WebsocketReceiver(session));
     }
 
@@ -41,6 +42,7 @@ public class SockJsEndpoint extends Endpoint {
     }
 
     private SockJsServer server;
+    private String prefix;
 
     private static final Logger log = Logger.getLogger(SockJsEndpoint.class.getName());
 }

@@ -17,7 +17,15 @@ public abstract class SockJsRequest {
 
     public abstract String getMethod();
 
+    public abstract String getUrl();
+
     public abstract String getPath();
+
+    public abstract String getPrefix();
+
+    public abstract String getRemoteAddr();
+
+    public abstract int getRemotePort();
 
     public abstract String getHeader(String name);
 

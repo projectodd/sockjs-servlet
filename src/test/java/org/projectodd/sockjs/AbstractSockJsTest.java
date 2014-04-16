@@ -15,7 +15,7 @@ import javax.servlet.Servlet;
 
 public class AbstractSockJsTest {
 
-    protected void installHandler(PathHandler pathHandler, SockJsServer server, String context) throws Exception {
+    protected HttpHandler createHandler(SockJsServer server, String context) throws Exception {
         Servlet servlet = new SockJsServlet(server);
         Class<? extends Servlet> servletClass = servlet.getClass();
         final ServletInfo servletInfo = Servlets.servlet(servletClass.getSimpleName(),
@@ -38,8 +38,11 @@ public class AbstractSockJsTest {
         servletBuilder.addServletContextAttribute(WebSocketDeploymentInfo.ATTRIBUTE_NAME, wsInfo);
         final DeploymentManager manager = Servlets.defaultContainer().addDeployment(servletBuilder);
         manager.deploy();
-        final HttpHandler servletHandler = manager.start();
+        return manager.start();
+    }
 
+    protected void installHandler(PathHandler pathHandler, SockJsServer server, String context) throws Exception {
+        final HttpHandler servletHandler = createHandler(server, context);
         pathHandler.addPrefixPath(context, servletHandler);
     }
 
