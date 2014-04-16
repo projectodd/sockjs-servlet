@@ -255,9 +255,7 @@
                       <arg value="HtmlFile"/>
                       <arg value="JsonPolling"/>
                       <arg value="JsessionidCookie"/>
-                      <!-- not implemented yet
-                           <arg value="RawWebsocket"/>
-                      -->
+                      <arg value="RawWebsocket"/>
                       <arg value="JSONEncoding"/>
                       <arg value="HandlingClose"/>
                       <arg value="Http10"/>

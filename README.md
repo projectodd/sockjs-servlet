@@ -6,9 +6,8 @@ This is an in-progress SockJS server implementation designed to run in
 any Java Servlet 3.1 container. Things are still a work-in-progress,
 and for now it's only tested with [Undertow][].
 
-All the protocols except raw websocket (not used by browser) have been
-implemented and I've verified that a basic browser SockJS client can
-connect.
+All the protocols have been implemented and I've verified that a basic
+browser SockJS client can connect.
 
 ## Echo Example
 

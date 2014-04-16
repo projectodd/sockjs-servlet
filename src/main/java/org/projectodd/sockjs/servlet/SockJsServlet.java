@@ -47,24 +47,34 @@ public class SockJsServlet extends HttpServlet {
         if (sockJsServer.options.websocket) {
             // Make sure we listen on all possible mappings of the servlet
             for (String mapping : getServletContext().getServletRegistration(getServletName()).getMappings()) {
-                String websocketPath = extractPrefixFromMapping(mapping) + sockJsServer.options.prefix +
-                        "/{server}/{session}/websocket";
-                ServerEndpointConfig config = ServerEndpointConfig.Builder
+                String commonPrefix = extractPrefixFromMapping(mapping) + sockJsServer.options.prefix;
+                ServerEndpointConfig.Configurator configurator = new ServerEndpointConfig.Configurator() {
+                    @Override
+                    public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
+                        try {
+                            return endpointClass.getConstructor(SockJsServer.class).newInstance(sockJsServer);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+
+                String websocketPath =  commonPrefix + "/{server}/{session}/websocket";
+                ServerEndpointConfig sockJsConfig = ServerEndpointConfig.Builder
                         .create(SockJsEndpoint.class, websocketPath)
-                        .configurator(new ServerEndpointConfig.Configurator() {
-                            @Override
-                            public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
-                                try {
-                                    return endpointClass.getConstructor(SockJsServer.class).newInstance(sockJsServer);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        })
+                        .configurator(configurator)
                         .build();
+
+                String rawWebsocketPath = commonPrefix + "/websocket";
+                ServerEndpointConfig rawWsConfig = ServerEndpointConfig.Builder
+                        .create(RawWebsocketEndpoint.class, rawWebsocketPath)
+                        .configurator(configurator)
+                        .build();
+
                 ServerContainer serverContainer = (ServerContainer) getServletContext().getAttribute("javax.websocket.server.ServerContainer");
                 try {
-                    serverContainer.addEndpoint(config);
+                    serverContainer.addEndpoint(sockJsConfig);
+                    serverContainer.addEndpoint(rawWsConfig);
                 } catch (DeploymentException ex) {
                     throw new ServletException("Error deploying websocket endpoint:", ex);
                 }

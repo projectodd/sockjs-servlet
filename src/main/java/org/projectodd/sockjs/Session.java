@@ -78,7 +78,7 @@ public class Session {
         tryFlush();
     }
 
-    private void decorateConnection(SockJsRequest req) {
+    protected void decorateConnection(SockJsRequest req) {
         // TODO: actually decorate this sucker
         connection.protocol = recv.protocol;
     }
@@ -198,12 +198,12 @@ public class Session {
     private int disconnectDelay;
     private int heartbeatDelay;
     private List<String> sendBuffer;
-    private int readyState;
+    protected int readyState;
     private Runnable timeoutCb;
     private ScheduledFuture toTref;
-    private SockJsConnection connection;
+    protected SockJsConnection connection;
     private Runnable emitOpen;
-    private GenericReceiver recv;
+    protected GenericReceiver recv;
     private String closeFrame;
 
     // TODO: Should this  be scoped to SockJsServer instances instead of across all apps?

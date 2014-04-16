@@ -67,11 +67,11 @@ public class SockJsConnection {
     }
 
     private Session session;
-    private String id;
     private OnDataHandler onDataHandler;
     private OnEndHandler onEndHandler;
     private OnCloseHandler onCloseHandler;
 
+    public String id;
     public String protocol;
 
     public static interface OnDataHandler {
