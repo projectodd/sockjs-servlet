@@ -50,7 +50,7 @@
 
     <script>
       var sockjs_url = "<%= request.getContextPath() %>/echo";
-      var sockjs = new SockJS(sockjs_url);
+      var sockjs = new SockJS(sockjs_url, undefined, {debug: true});
 
       var div  = $('#first div');
       var inp  = $('#first input');
