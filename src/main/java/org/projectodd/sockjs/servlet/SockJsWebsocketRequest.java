@@ -4,13 +4,15 @@ import org.projectodd.sockjs.SockJsRequest;
 
 import javax.websocket.Session;
 import java.util.List;
+import java.util.Map;
 
 public class SockJsWebsocketRequest extends SockJsRequest {
 
-    public SockJsWebsocketRequest(Session session, String contextPath, String prefix) {
+    public SockJsWebsocketRequest(Session session, String contextPath, String prefix, Map<String, List<String>> headers) {
         this.session = session;
         this.contextPath = contextPath;
         this.prefix = prefix;
+        this.headers = headers;
     }
 
     @Override
@@ -57,6 +59,14 @@ public class SockJsWebsocketRequest extends SockJsRequest {
 
     @Override
     public String getHeader(String name) {
+        for (String header : headers.keySet()) {
+            if (name.equalsIgnoreCase(header)) {
+                List<String> values = headers.get(header);
+                if (values != null && values.size() > 0) {
+                    return values.get(0);
+                }
+            }
+        }
         return null;
     }
 
@@ -82,4 +92,5 @@ public class SockJsWebsocketRequest extends SockJsRequest {
     private Session session;
     private String contextPath;
     private String prefix;
+    private Map<String, List<String>> headers;
 }

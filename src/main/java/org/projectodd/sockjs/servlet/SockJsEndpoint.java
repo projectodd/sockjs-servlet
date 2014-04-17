@@ -13,6 +13,8 @@ import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +30,9 @@ public class SockJsEndpoint extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig config) {
         log.log(Level.FINER, "onOpen");
-        SockJsRequest req = new SockJsWebsocketRequest(session, contextPath, prefix);
+        String sessionId = session.getPathParameters().get("session");
+        Map<String, List<String>> headers = SockJsServlet.retrieveHeaders(sessionId);
+        SockJsRequest req = new SockJsWebsocketRequest(session, contextPath, prefix, headers);
         Transport.registerNoSession(req, server, new WebsocketReceiver(session));
     }
 

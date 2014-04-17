@@ -12,6 +12,7 @@ import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -28,7 +29,7 @@ public class RawWebsocketEndpoint extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig config) {
         log.log(Level.FINER, "onOpen for session {0}", session.getId());
-        SockJsRequest req = new SockJsWebsocketRequest(session, contextPath, prefix);
+        SockJsRequest req = new SockJsWebsocketRequest(session, contextPath, prefix, Collections.EMPTY_MAP);
         receivers.put(session.getId(), new RawWebsocketSessionReceiver(req, server, session));
     }
 

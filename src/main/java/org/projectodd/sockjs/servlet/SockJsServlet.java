@@ -13,11 +13,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.DeploymentException;
+import javax.websocket.HandshakeResponse;
+import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SockJsServlet extends HttpServlet {
 
@@ -56,6 +64,16 @@ public class SockJsServlet extends HttpServlet {
                                     .newInstance(sockJsServer, getServletContext().getContextPath(), commonPrefix);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
+                        }
+                    }
+                    private final Pattern sessionPattern = Pattern.compile(".*/.+/(.+)/websocket");
+                    @Override
+                    public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
+                        String path = request.getRequestURI().getPath();
+                        Matcher matcher = sessionPattern.matcher(path);
+                        if (matcher.matches()) {
+                            String sessionId = matcher.group(1);
+                            saveHeaders(sessionId, request.getHeaders());
                         }
                     }
                 };
@@ -119,7 +137,33 @@ public class SockJsServlet extends HttpServlet {
         sockJsServer.destroy();
     }
 
+    static void saveHeaders(String sessionId, Map<String, List<String>> headers) {
+        savedHeaders.put(sessionId, headers);
+    }
+
+    static Map<String, List<String>> retrieveHeaders(String sessionId) {
+        return savedHeaders.remove(sessionId);
+    }
+
     private SockJsServer sockJsServer;
 
     private static final Logger log = Logger.getLogger(SockJsServlet.class.getName());
+
+    /**
+     * Store a map of SockJS sessionId to header values from the upgrade
+     * request since JSR-356 gives us no way to access this from Endpoints
+     * directly. The MAX_INFLIGHT_HEADERS and LinkedHashMap#removeEldestEntry
+     * are used to make sure any really misbehaving clients don't cause
+     * entries to accumulate in the map. Under normal circumstances, an entry
+     * is removed very shortly after it's added since we don't add it until
+     * the handshake process is complete and remove it as soon as the
+     * Endpoint's onOpen gets called.
+     */
+    private static final int MAX_INFLIGHT_HEADERS = 100;
+    private static final Map<String, Map<String, List<String>>> savedHeaders = Collections.synchronizedMap(new LinkedHashMap<String,Map<String, List<String>>>() {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry eldest) {
+            return size() > MAX_INFLIGHT_HEADERS;
+        }
+    });
 }

@@ -15,8 +15,11 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.projectodd.sockjs.servlet.SockJsServlet;
 
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -100,6 +103,7 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
                 String baseWsUrl = baseUrl.replace("http", "ws");
                 URI uri = new URI(baseWsUrl + (context.equals("/") ? "" : context) + prefix + "/000/" + sessionId + "/websocket?foo=bar");
                 ClientUpgradeRequest upgradeRequest = new ClientUpgradeRequest();
+                upgradeRequest.setHeader("user-agent", "WebSocketClient");
                 client.connect(new WebSocketListener() {
                     @Override
                     public void onWebSocketBinary(byte[] payload, int offset, int len) {
@@ -126,6 +130,13 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
                 Thread.sleep(25);
             }
         });
+
+        // Make sure we're not leaking saved headers, using reflection so we
+        // don't have to expose this field to anyone else
+        Field savedHeadersField = SockJsServlet.class.getDeclaredField("savedHeaders");
+        savedHeadersField.setAccessible(true);
+        Map savedHeaders = (Map) savedHeadersField.get(SockJsServlet.class);
+        assertEquals(0, savedHeaders.size());
     }
 
     private void verify(final String context, final String mapping, final boolean websocket, VerifyBlock verifyBlock) throws Exception {
@@ -142,15 +153,13 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
                     // TODO: Figure out if there's any way to get the remote IP and port
                     assertEquals(null, connection.remoteAddress);
                     assertEquals(0, connection.remotePort);
-                    // TODO: and headers
-                    assertEquals(null, connection.headers.get("host"));
                 } else {
                     suffix = "/xhr";
                     assertEquals("127.0.0.1", connection.remoteAddress);
                     assertTrue(connection.remotePort > 0);
-                    assertEquals("localhost:8081", connection.headers.get("host"));
-                    assertTrue(connection.headers.get("user-agent").contains("Apache-HttpClient"));
                 }
+                assertEquals("localhost:8081", connection.headers.get("host"));
+                assertNotNull(connection.headers.get("user-agent"));
                 String baseUrl = (context.equals("/") ? "" : context) + prefix + "/000/" + sessionId + suffix;
                 assertEquals(baseUrl + "?foo=bar", connection.url);
                 assertEquals("/000/" + sessionId + suffix, connection.pathname);
