@@ -15,13 +15,13 @@ import javax.servlet.Servlet;
 
 public class AbstractSockJsTest {
 
-    protected DeploymentManager createDeploymentManager(SockJsServer server, String context) throws Exception {
+    protected DeploymentManager createDeploymentManager(SockJsServer server, String context, String mapping) throws Exception {
         Servlet servlet = new SockJsServlet(server);
         Class<? extends Servlet> servletClass = servlet.getClass();
         final ServletInfo servletInfo = Servlets.servlet(servletClass.getSimpleName(),
                 servletClass,
                 new ImmediateInstanceFactory<>(servlet));
-        servletInfo.addMapping("/*");
+        servletInfo.addMapping(mapping);
         // LoadOnStartup is required for our websocket Endpoint to work
         servletInfo.setLoadOnStartup(0);
         // AsyncSupported is required
@@ -40,7 +40,7 @@ public class AbstractSockJsTest {
     }
 
     protected void installHandler(PathHandler pathHandler, SockJsServer server, String context) throws Exception {
-        final DeploymentManager manager = createDeploymentManager(server, context);
+        final DeploymentManager manager = createDeploymentManager(server, context, "/*");
         manager.deploy();
         final HttpHandler servletHandler = manager.start();
         pathHandler.addPrefixPath(context, servletHandler);

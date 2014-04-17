@@ -19,15 +19,16 @@ import java.util.logging.Logger;
 
 public class RawWebsocketEndpoint extends Endpoint {
 
-    public RawWebsocketEndpoint(SockJsServer server, String prefix) {
+    public RawWebsocketEndpoint(SockJsServer server, String contextPath, String prefix) {
         this.server = server;
+        this.contextPath = contextPath;
         this.prefix = prefix;
     }
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
         log.log(Level.FINER, "onOpen for session {0}", session.getId());
-        SockJsRequest req = new SockJsWebsocketRequest(session, prefix);
+        SockJsRequest req = new SockJsWebsocketRequest(session, contextPath, prefix);
         receivers.put(session.getId(), new RawWebsocketSessionReceiver(req, server, session));
     }
 
@@ -42,10 +43,11 @@ public class RawWebsocketEndpoint extends Endpoint {
 
     @Override
     public void onError(Session session, Throwable thr) {
-        log.log(Level.WARNING, "Error in raw WebSocket endpoint", thr);
+        log.log(Level.FINE, "Error in raw WebSocket endpoint", thr);
     }
 
     private SockJsServer server;
+    private String contextPath;
     private String prefix;
 
     private static final Map<String, RawWebsocketSessionReceiver> receivers = new ConcurrentHashMap<>();

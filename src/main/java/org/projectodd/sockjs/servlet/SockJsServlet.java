@@ -52,8 +52,8 @@ public class SockJsServlet extends HttpServlet {
                     @Override
                     public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
                         try {
-                            return endpointClass.getConstructor(SockJsServer.class, String.class)
-                                    .newInstance(sockJsServer, commonPrefix);
+                            return endpointClass.getConstructor(SockJsServer.class, String.class, String.class)
+                                    .newInstance(sockJsServer, getServletContext().getContextPath(), commonPrefix);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }

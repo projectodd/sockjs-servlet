@@ -43,7 +43,7 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
 
     @Override
     public String getPrefix() {
-        return request.getContextPath();
+        return request.getContextPath() + request.getServletPath();
     }
 
     @Override

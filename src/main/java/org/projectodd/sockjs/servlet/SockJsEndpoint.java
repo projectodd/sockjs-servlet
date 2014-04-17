@@ -19,15 +19,16 @@ import java.util.logging.Logger;
 
 public class SockJsEndpoint extends Endpoint {
 
-    public SockJsEndpoint(SockJsServer server, String prefix) {
+    public SockJsEndpoint(SockJsServer server, String contextPath, String prefix) {
         this.server = server;
+        this.contextPath = contextPath;
         this.prefix = prefix;
     }
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
         log.log(Level.FINER, "onOpen");
-        SockJsRequest req = new SockJsWebsocketRequest(session, prefix);
+        SockJsRequest req = new SockJsWebsocketRequest(session, contextPath, prefix);
         Transport.registerNoSession(req, server, new WebsocketReceiver(session));
     }
 
@@ -38,10 +39,11 @@ public class SockJsEndpoint extends Endpoint {
 
     @Override
     public void onError(Session session, Throwable thr) {
-        log.log(Level.WARNING, "Error in SockJS WebSocket endpoint", thr);
+        log.log(Level.FINE, "Error in SockJS WebSocket endpoint", thr);
     }
 
     private SockJsServer server;
+    private String contextPath;
     private String prefix;
 
     private static final Logger log = Logger.getLogger(SockJsEndpoint.class.getName());

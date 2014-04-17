@@ -7,8 +7,9 @@ import java.util.List;
 
 public class SockJsWebsocketRequest extends SockJsRequest {
 
-    public SockJsWebsocketRequest(Session session, String prefix) {
+    public SockJsWebsocketRequest(Session session, String contextPath, String prefix) {
         this.session = session;
+        this.contextPath = contextPath;
         this.prefix = prefix;
     }
 
@@ -26,7 +27,13 @@ public class SockJsWebsocketRequest extends SockJsRequest {
     @Override
     public String getPath() {
         String path = session.getRequestURI().getPath();
-        if (path != null && path.startsWith(prefix)) {
+        if (path == null) {
+            return null;
+        }
+        if (contextPath.length() > 1 && path.startsWith(contextPath)) {
+            path = path.substring(contextPath.length());
+        }
+        if (prefix.length() > 0 && path.startsWith(prefix)) {
             path = path.substring(prefix.length());
         }
         return path;
@@ -34,7 +41,7 @@ public class SockJsWebsocketRequest extends SockJsRequest {
 
     @Override
     public String getPrefix() {
-        return prefix;
+        return contextPath + prefix;
     }
 
     @Override
@@ -73,5 +80,6 @@ public class SockJsWebsocketRequest extends SockJsRequest {
     }
 
     private Session session;
+    private String contextPath;
     private String prefix;
 }

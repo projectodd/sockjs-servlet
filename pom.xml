@@ -43,6 +43,7 @@
     <version.junit>4.11</version.junit>
     <version.undertow>1.0.4.Final</version.undertow>
     <version.httpclient>4.3.3</version.httpclient>
+    <version.jetty>9.1.4.v20140401</version.jetty>
   </properties>
     
   <dependencyManagement>
@@ -88,6 +89,12 @@
         <artifactId>httpclient</artifactId>
         <version>${version.httpclient}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.jetty.websocket</groupId>
+        <artifactId>websocket-client</artifactId>
+        <version>${version.jetty}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -130,6 +137,12 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>websocket-client</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
