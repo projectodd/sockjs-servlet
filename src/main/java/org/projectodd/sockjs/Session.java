@@ -93,7 +93,7 @@ public class Session {
         for (String headerName : headerNames) {
             String value = req.getHeader(headerName);
             if (value != null) {
-                connection.headers.put(headerName, value);
+                connection.headers.put(headerName.toLowerCase(), value);
             }
         }
     }

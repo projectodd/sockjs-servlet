@@ -127,9 +127,9 @@ public class SockJsConnection {
     /**
      * Hash containing various headers copied from last request received on
      * this connection. Exposed headers include: `origin`, `referer` and
-     * `x-forwarded-for` (and friends). This explicitly does not grant access
-     * to the `cookie` header, as using it may easily lead to security issues
-     * (for details read the section "Authorisation" at
+     * `x-forwarded-for` (and friends), all lowercase. This explicitly does
+     * not grant access to the `cookie` header, as using it may easily lead
+     * to security issues (for details read the section "Authorisation" at
      * https://github.com/sockjs/sockjs-node).
      */
     public Map<String, String> headers = new HashMap<>();
