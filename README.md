@@ -10,6 +10,19 @@ All the protocols have been implemented and I've verified that a basic
 browser SockJS client works with the echo example on [Undertow],
 [WildFly 8][wildfly], and [Tomcat 8].
 
+## Releases
+
+All releases are published to Maven Central at
+http://central.maven.org/maven2/org/projectodd/sockjs/sockjs-servlet/
+
+Example Maven &lt;dependency&gt; entry to pull in the latest version:
+
+    <dependency>
+      <groupId>org.projectodd.sockjs</groupId>
+      <artifactId>sockjs-servlet</artifactId>
+      <version>[0.1.0,)</version>
+    </dependency>
+
 ## Echo Example
 
 See our [echo example](examples/echo) for an example of building a

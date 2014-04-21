@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.projectodd.sockjs</groupId>
       <artifactId>sockjs-servlet</artifactId>
-      <version>${project.version}</version>
+      <version>[0.1.0,)</version>
     </dependency>
   </dependencies>
 
