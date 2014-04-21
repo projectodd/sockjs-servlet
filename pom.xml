@@ -21,17 +21,28 @@
   <description>
     A SockJS server implementation that uses Java Servlet 3.1 APIs.
   </description>
+  <url>https://github.com/projectodd/sockjs-servlet</url>
+
+  <scm>
+    <connection>scm:git:git@github.com:projectodd/sockjs-servlet.git</connection>
+    <developerConnection>scm:git:git@github.com:projectodd/sockjs-servlet.git</developerConnection>
+    <url>https://github.com/projectodd/sockjs-servlet</url>
+  </scm>
 
   <developers>
     <developer>
-      <id>projectodd-team</id>
-      <name>The Project:Odd Team</name>
+      <name>Benjamin Browning</name>
+      <email>bbrownin@redhat.com</email>
+      <url>https://github.com/bbrowning/</url>
+      <organization>Red Hat</organization>
+      <organizationUrl>http://redhat.com</organizationUrl>
     </developer>
   </developers>
 
   <licenses>
     <license>
-      <name>MIT</name>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
     </license>
   </licenses>
 
