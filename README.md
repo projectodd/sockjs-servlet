@@ -74,6 +74,12 @@ wrong.
   off the internal sockjs session id. This isn't an option when using
   raw websockets.
 
+* We don't immediately respond to closing of connections at the socket
+  level, and instead wait for the next heartbeat interval to realize
+  the client closed the connection. We'll likely need some
+  server-specific hacks to be able to handle this kind of connection
+  closure from the TCP level.
+
 
 [undertow]: http://undertow.io/
 [wildfly]: http://wildfly.org/
