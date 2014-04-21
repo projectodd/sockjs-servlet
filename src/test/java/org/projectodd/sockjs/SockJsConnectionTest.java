@@ -74,8 +74,23 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
         verifyWs("/foo", "/bar/*");
     }
 
+    @Test
+    public void testDecoratedFromRawWebsocketRootContextRootMapping() throws Exception {
+        verifyRawWs("/", "/*");
+    }
+
+    @Test
+    public void testDecoratedFromRawWebsocketNonRootContextRootMapping() throws Exception {
+        verifyRawWs("/foo", "/*");
+    }
+
+    @Test
+    public void testDecoratedFromRawWebsocketNonRootContextNonRootMapping() throws Exception {
+        verifyRawWs("/foo", "/bar/*");
+    }
+
     private void verifyHttp(final String context, final String mapping) throws Exception {
-        verify(context, mapping, false, new VerifyBlock() {
+        verify(context, mapping, new VerifyBlock() {
             CloseableHttpResponse response = null;
             @Override
             public void connect(String prefix, String sessionId) throws Exception {
@@ -87,6 +102,10 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
                 assertEquals("o\n", body);
             }
             @Override
+            public void verify(SockJsConnection connection, String prefix, String sessionId) {
+                verifyNonRaw(connection, context, prefix, sessionId, false);
+            }
+            @Override
             public void disconnect() throws Exception {
                 response.close();
             }
@@ -94,7 +113,7 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
     }
 
     private void verifyWs(final String context, final String mapping) throws Exception {
-        verify(context, mapping, true, new VerifyBlock() {
+        verify(context, mapping, new VerifyBlock() {
             WebSocketClient client = null;
             @Override
             public void connect(String prefix, String sessionId) throws Exception {
@@ -124,6 +143,10 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
                 }, uri, upgradeRequest);
             }
             @Override
+            public void verify(SockJsConnection connection, String prefix, String sessionId) {
+                verifyNonRaw(connection, context, prefix, sessionId, true);
+            }
+            @Override
             public void disconnect() throws Exception {
                 client.stop();
                 // sleep prevents some xnio stack on undertow shutdown
@@ -131,40 +154,94 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
             }
         });
 
-        // Make sure we're not leaking saved headers, using reflection so we
-        // don't have to expose this field to anyone else
-        Field savedHeadersField = SockJsServlet.class.getDeclaredField("savedHeaders");
-        savedHeadersField.setAccessible(true);
-        Map savedHeaders = (Map) savedHeadersField.get(SockJsServlet.class);
-        assertEquals(0, savedHeaders.size());
+        verifyNoSavedHeadersLeaked();
     }
 
-    private void verify(final String context, final String mapping, final boolean websocket, VerifyBlock verifyBlock) throws Exception {
+    private void verifyRawWs(final String context, final String mapping) throws Exception {
+        verify(context, mapping, new VerifyBlock() {
+            WebSocketClient client = null;
+            @Override
+            public void connect(String prefix, String sessionId) throws Exception {
+                client = new WebSocketClient();
+                client.start();
+                String baseWsUrl = baseUrl.replace("http", "ws");
+                URI uri = new URI(baseWsUrl + (context.equals("/") ? "" : context) + prefix + "/websocket?foo=bar");
+                ClientUpgradeRequest upgradeRequest = new ClientUpgradeRequest();
+                upgradeRequest.setHeader("user-agent", "WebSocketClient");
+                client.connect(new WebSocketListener() {
+                    @Override
+                    public void onWebSocketBinary(byte[] payload, int offset, int len) {
+                    }
+                    @Override
+                    public void onWebSocketClose(int statusCode, String reason) {
+                    }
+                    @Override
+                    public void onWebSocketConnect(Session session) {
+                    }
+                    @Override
+                    public void onWebSocketError(Throwable cause) {
+                    }
+                    @Override
+                    public void onWebSocketText(String message) {
+                    }
+                }, uri, upgradeRequest);
+            }
+            @Override
+            public void verify(SockJsConnection connection, String prefix, String sessionId) {
+                assertNotNull(connection.id);
+                // TODO: Figure out if there's any way to get the remote IP and port
+                assertEquals(null, connection.remoteAddress);
+                assertEquals(0, connection.remotePort);
+                // TODO: Figure out if there's a way to get headers to raw websockets
+                // assertEquals("localhost:8081", connection.headers.get("host"));
+                // assertNotNull(connection.headers.get("user-agent"));
+                String baseUrl = (context.equals("/") ? "" : context) + prefix + "/websocket";
+                assertEquals(baseUrl + "?foo=bar", connection.url);
+                assertEquals("/websocket", connection.pathname);
+                assertEquals(context + prefix, connection.prefix);
+                assertEquals(Transport.READY_STATE.OPEN, connection.getReadyState());
+            }
+            @Override
+            public void disconnect() throws Exception {
+                client.stop();
+                // sleep prevents some xnio stack on undertow shutdown
+                Thread.sleep(25);
+            }
+        });
+
+        verifyNoSavedHeadersLeaked();
+    }
+
+    private void verifyNonRaw(SockJsConnection connection, String context, String prefix, String sessionId, boolean websocket) {
+        assertNotNull(connection.id);
+        String suffix = "";
+        if (websocket) {
+            suffix = "/websocket";
+            // TODO: Figure out if there's any way to get the remote IP and port
+            assertEquals(null, connection.remoteAddress);
+            assertEquals(0, connection.remotePort);
+        } else {
+            suffix = "/xhr";
+            assertEquals("127.0.0.1", connection.remoteAddress);
+            assertTrue(connection.remotePort > 0);
+        }
+        assertEquals("localhost:8081", connection.headers.get("host"));
+        assertNotNull(connection.headers.get("user-agent"));
+        String baseUrl = (context.equals("/") ? "" : context) + prefix + "/000/" + sessionId + suffix;
+        assertEquals(baseUrl + "?foo=bar", connection.url);
+        assertEquals("/000/" + sessionId + suffix, connection.pathname);
+        assertEquals(context + prefix, connection.prefix);
+        assertEquals(Transport.READY_STATE.OPEN, connection.getReadyState());
+    }
+
+    private void verify(final String context, final String mapping, final VerifyBlock verifyBlock) throws Exception {
         final String sessionId = UUID.randomUUID().toString();
         final String prefix = extractPrefixFromMapping(mapping);
         final CountDownLatch connected = new CountDownLatch(1);
         server.onConnection(new SockJsServer.OnConnectionHandler() {
             @Override
             public void handle(SockJsConnection connection) {
-                assertNotNull(connection.id);
-                String suffix = "";
-                if (websocket) {
-                    suffix = "/websocket";
-                    // TODO: Figure out if there's any way to get the remote IP and port
-                    assertEquals(null, connection.remoteAddress);
-                    assertEquals(0, connection.remotePort);
-                } else {
-                    suffix = "/xhr";
-                    assertEquals("127.0.0.1", connection.remoteAddress);
-                    assertTrue(connection.remotePort > 0);
-                }
-                assertEquals("localhost:8081", connection.headers.get("host"));
-                assertNotNull(connection.headers.get("user-agent"));
-                String baseUrl = (context.equals("/") ? "" : context) + prefix + "/000/" + sessionId + suffix;
-                assertEquals(baseUrl + "?foo=bar", connection.url);
-                assertEquals("/000/" + sessionId + suffix, connection.pathname);
-                assertEquals(context + prefix, connection.prefix);
-                assertEquals(Transport.READY_STATE.OPEN, connection.getReadyState());
+                verifyBlock.verify(connection, prefix, sessionId);
                 connected.countDown();
             }
         });
@@ -178,6 +255,15 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
         assertTrue(connected.await(5, TimeUnit.SECONDS));
         verifyBlock.disconnect();
         manager.stop();
+    }
+
+    private void verifyNoSavedHeadersLeaked() throws Exception {
+        // Make sure we're not leaking saved headers, using reflection so we
+        // don't have to expose this field to anyone else
+        Field savedHeadersField = SockJsServlet.class.getDeclaredField("savedHeaders");
+        savedHeadersField.setAccessible(true);
+        Map savedHeaders = (Map) savedHeadersField.get(SockJsServlet.class);
+        assertEquals(0, savedHeaders.size());
     }
 
     private String extractPrefixFromMapping(String mapping) {
@@ -197,6 +283,7 @@ public class SockJsConnectionTest extends AbstractSockJsTest {
 
     private static interface VerifyBlock {
         void connect(String prefix, String sessionId) throws Exception;
+        void verify(SockJsConnection connection, String prefix, String sessionId);
         void disconnect() throws Exception;
     }
 }

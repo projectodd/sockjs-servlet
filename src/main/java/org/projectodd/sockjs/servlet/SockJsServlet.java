@@ -56,38 +56,17 @@ public class SockJsServlet extends HttpServlet {
             // Make sure we listen on all possible mappings of the servlet
             for (String mapping : getServletContext().getServletRegistration(getServletName()).getMappings()) {
                 final String commonPrefix = extractPrefixFromMapping(mapping);
-                ServerEndpointConfig.Configurator configurator = new ServerEndpointConfig.Configurator() {
-                    @Override
-                    public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
-                        try {
-                            return endpointClass.getConstructor(SockJsServer.class, String.class, String.class)
-                                    .newInstance(sockJsServer, getServletContext().getContextPath(), commonPrefix);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    private final Pattern sessionPattern = Pattern.compile(".*/.+/(.+)/websocket");
-                    @Override
-                    public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
-                        String path = request.getRequestURI().getPath();
-                        Matcher matcher = sessionPattern.matcher(path);
-                        if (matcher.matches()) {
-                            String sessionId = matcher.group(1);
-                            saveHeaders(sessionId, request.getHeaders());
-                        }
-                    }
-                };
 
                 String websocketPath =  commonPrefix + "/{server}/{session}/websocket";
                 ServerEndpointConfig sockJsConfig = ServerEndpointConfig.Builder
                         .create(SockJsEndpoint.class, websocketPath)
-                        .configurator(configurator)
+                        .configurator(configuratorFor(commonPrefix, false))
                         .build();
 
                 String rawWebsocketPath = commonPrefix + "/websocket";
                 ServerEndpointConfig rawWsConfig = ServerEndpointConfig.Builder
                         .create(RawWebsocketEndpoint.class, rawWebsocketPath)
-                        .configurator(configurator)
+                        .configurator(configuratorFor(commonPrefix, true))
                         .build();
 
                 ServerContainer serverContainer = (ServerContainer) getServletContext().getAttribute("javax.websocket.server.ServerContainer");
@@ -109,6 +88,35 @@ public class SockJsServlet extends HttpServlet {
             mapping = mapping.substring(0, mapping.length() - 1);
         }
         return mapping;
+    }
+
+    private ServerEndpointConfig.Configurator configuratorFor(final String prefix, final boolean isRaw) {
+        return new ServerEndpointConfig.Configurator() {
+            @Override
+            public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
+                try {
+                    return endpointClass.getConstructor(SockJsServer.class, String.class, String.class)
+                            .newInstance(sockJsServer, getServletContext().getContextPath(), prefix);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
+                if (isRaw) {
+                    // We have no reliable key (like session id) to save
+                    // headers with for raw websocket requests
+                    return;
+                }
+                String path = request.getRequestURI().getPath();
+                Matcher matcher = SESSION_PATTERN.matcher(path);
+                if (matcher.matches()) {
+                    String sessionId = matcher.group(1);
+                    saveHeaders(sessionId, request.getHeaders());
+                }
+            }
+        };
     }
 
     @Override
@@ -146,6 +154,8 @@ public class SockJsServlet extends HttpServlet {
     }
 
     private SockJsServer sockJsServer;
+
+    private static final Pattern SESSION_PATTERN = Pattern.compile(".*/.+/(.+)/websocket$");
 
     private static final Logger log = Logger.getLogger(SockJsServlet.class.getName());
 
