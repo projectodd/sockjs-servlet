@@ -47,6 +47,20 @@ unexpected failures, `target/sockjs-protocol-output.log` and
 `target/server-output.log` are helpful in figuring out what went
 wrong.
 
+## Known Issues
+
+* The client's remote IP and port are not available on
+  SockJsConnection when using websockets. This is due to a limitation
+  of the servlet 3.1 and websocket spec in Java that gives us no way
+  to access this information.
+
+* The client's headers are not available on SockJsConnection when
+  using raw (non-browser) websockets. This is due to the same
+  limitation as remote IP / port above, but when using browser-based
+  websockets we can hack around it by storing some information keyed
+  off the internal sockjs session id. This isn't an option when using
+  raw websockets.
+
 
 [undertow]: http://undertow.io/
 [wildfly]: http://wildfly.org/
