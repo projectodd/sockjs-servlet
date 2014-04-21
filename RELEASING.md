@@ -5,6 +5,11 @@
 Make sure you have an account at https://oss.sonatype.org and that
 you're a member of the org.projectodd group.
 
+### Verify Examples Work
+
+Take a minute to go through each example in the `examples/` directory
+and make sure they all build and work with the latest version.
+
 ### Update Version Numbers
 
     $ support/release.sh NEW_VERSION NEXT_VERSION
