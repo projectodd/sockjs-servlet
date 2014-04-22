@@ -75,10 +75,12 @@ wrong.
   raw websockets.
 
 * We don't immediately respond to closing of connections at the socket
-  level, and instead wait for the next heartbeat interval to realize
-  the client closed the connection. We'll likely need some
-  server-specific hacks to be able to handle this kind of connection
-  closure from the TCP level.
+  level and instead wait for the next heartbeat interval to realize
+  the client closed the connection. The exception to this is if a new
+  connection is opened with the same SockJS session id - in that case
+  we actively check if the old connection is still working by sending
+  down a heartbeat frame. If that fails, then we mark the old
+  connection as closed and allow the new connection to open.
 
 
 [undertow]: http://undertow.io/
