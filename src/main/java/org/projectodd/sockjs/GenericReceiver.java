@@ -33,6 +33,7 @@ public abstract class GenericReceiver {
     }
 
     public abstract boolean doSendFrame(String payload);
+    public abstract void checkAlive();
 
     public Session session;
     protected String protocol = null;

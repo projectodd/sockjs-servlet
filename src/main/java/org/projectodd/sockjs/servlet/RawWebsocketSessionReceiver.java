@@ -41,6 +41,10 @@ public class RawWebsocketSessionReceiver extends Session {
             public boolean doSendFrame(String payload) {
                 return false; // never called
             }
+            @Override
+            public void checkAlive() {
+                // no-op
+            }
         };
         decorateConnection(req);
         server.emitConnection(connection);

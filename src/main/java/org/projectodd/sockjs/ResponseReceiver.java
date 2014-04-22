@@ -15,7 +15,13 @@ public class ResponseReceiver extends GenericReceiver {
     }
 
     public boolean doSendFrame(String payload) {
-        currResponseSize += payload.length();
+        return doSendFrame(payload, true);
+    }
+
+    private boolean doSendFrame(String payload, boolean checkSize) {
+        if (checkSize) {
+            currResponseSize += payload.length();
+        }
         boolean r = false;
         try {
             response.write(payload);
@@ -24,10 +30,17 @@ public class ResponseReceiver extends GenericReceiver {
             didAbort();
             return r;
         }
-        if (maxResponseSize >= 0 && currResponseSize >= maxResponseSize) {
-            didClose();
+        if (checkSize) {
+            if (maxResponseSize >= 0 && currResponseSize >= maxResponseSize) {
+                didClose();
+            }
         }
         return r;
+    }
+
+    @Override
+    public void checkAlive() {
+        doSendFrame("h", false);
     }
 
     @Override

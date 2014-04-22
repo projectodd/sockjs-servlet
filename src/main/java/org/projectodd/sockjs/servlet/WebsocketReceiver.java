@@ -77,6 +77,11 @@ public class WebsocketReceiver extends GenericReceiver {
     }
 
     @Override
+    public void checkAlive() {
+        doSendFrame("h");
+    }
+
+    @Override
     protected void didClose() {
         super.didClose();
         try {

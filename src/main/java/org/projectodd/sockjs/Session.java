@@ -45,9 +45,18 @@ public class Session {
 
     public void register(SockJsRequest req, GenericReceiver recv) {
         if (this.recv != null) {
-            recv.doSendFrame(Transport.closeFrame(2010, "Another connection still open"));
-            recv.didClose();
-            return;
+            this.recv.checkAlive();
+            if (this.recv != null) {
+                recv.doSendFrame(Transport.closeFrame(2010, "Another connection still open"));
+                recv.didClose();
+                return;
+            } else {
+                // Looks like the client closed the connection on the previous
+                // receiver so register this new receiver again now that we've
+                // figured that out
+                Transport.register(req, server, recv);
+                return;
+            }
         }
         if (toTref != null) {
             server.clearTimeout(toTref);
