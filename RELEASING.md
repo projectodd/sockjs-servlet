@@ -10,11 +10,11 @@ you're a member of the org.projectodd group.
 Take a minute to go through each example in the `examples/` directory
 and make sure they all build and work with the latest version.
 
-### Update Version Numbers
+### Build and Deploy Release
 
-    $ support/release.sh NEW_VERSION NEXT_VERSION
+    $ support/release.sh RELEASE_VERSION NEXT_VERSION
 
-### Verify Artifacts
+### Verify Staging Artifacts
 
 Look for our staging repository at
 https://oss.sonatype.org/#stagingRepositories - the name will start
