@@ -14,7 +14,7 @@
 
   <groupId>org.projectodd.sockjs</groupId>
   <artifactId>sockjs-servlet</artifactId>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.1.1</version>
   <packaging>jar</packaging>
 
   <name>SockJS Servlet</name>
