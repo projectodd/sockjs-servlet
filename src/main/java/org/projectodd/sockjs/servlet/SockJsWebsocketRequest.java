@@ -43,7 +43,8 @@ public class SockJsWebsocketRequest extends SockJsRequest {
 
     @Override
     public String getPrefix() {
-        return contextPath + prefix;
+        String sockjsPrefix = contextPath + prefix;
+        return sockjsPrefix.equals("") ? "/" : sockjsPrefix;
     }
 
     @Override

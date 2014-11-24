@@ -52,7 +52,7 @@
     <version.gson>2.2.4</version.gson>
 
     <version.junit>4.11</version.junit>
-    <version.undertow>1.0.4.Final</version.undertow>
+    <version.undertow>1.1.0.Final</version.undertow>
     <version.httpclient>4.3.3</version.httpclient>
     <version.jetty>9.1.4.v20140401</version.jetty>
   </properties>

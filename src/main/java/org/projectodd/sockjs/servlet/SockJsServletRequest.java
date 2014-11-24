@@ -43,7 +43,8 @@ public class SockJsServletRequest extends SockJsRequest implements ReadListener 
 
     @Override
     public String getPrefix() {
-        return request.getContextPath() + request.getServletPath();
+        String prefix = request.getContextPath() + request.getServletPath();
+        return prefix.equals("") ? "/" : prefix;
     }
 
     @Override

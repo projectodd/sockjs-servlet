@@ -134,7 +134,7 @@ public class SockJsServlet extends HttpServlet {
         if ("application/x-www-form-urlencoded".equals(req.getHeader("Content-Type"))) {
             // Let the servlet parse data and just pretend like we did
             sockJsReq.onAllDataRead();
-        } else {
+        } else if (req.isAsyncStarted()) {
             req.getInputStream().setReadListener(sockJsReq);
         }
     }
